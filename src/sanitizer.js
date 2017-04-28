@@ -9,7 +9,7 @@ module.exports = Sanitize;
 var _ = require('lodash');
 var __validator__ = require('validator');
 var xss = require('xss');
-var debug = require('debug')('poplar:sanitizer');
+var debug = require('debug')('mostly:poplarjs:sanitizer');
 
 var Helper = require('./helper');
 

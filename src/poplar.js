@@ -14,6 +14,7 @@ var path = require('path');
 var _ = require('lodash');
 var minimatch = require('minimatch');
 
+var Adapter = require('./adapter');
 var Dynamic = require('./dynamic');
 var ApiBuilder = require('./api_builder');
 
@@ -22,13 +23,14 @@ var ApiBuilder = require('./api_builder');
  * @class
  * @param {Object} options Poplar options object
  */
-function Poplar(options) {
+function Poplar(trans, options) {
   // call super
   EventEmitter.call(this);
 
   // Avoid warning: possible EventEmitter memory leak detected
   this.setMaxListeners(16);
 
+  this._trans = trans;
   this.options = options || {};
   this._apiBuilders = {};
   this._methods = {};
@@ -43,11 +45,12 @@ Poplar.locals = {};
 
 /**
  * Simplified API for creating Poplar instance, equals to `new Poplar(options)`
+ * @param {Object} trans Nats transport
  * @param {Object} options Poplar options
  * @return {Poplar} Poplar instance
  */
-Poplar.create = function(options) {
-  return new Poplar(options);
+Poplar.create = function(trans, options) {
+  return new Poplar(trans, options);
 };
 
 /*!
@@ -173,6 +176,8 @@ Poplar.prototype.use = function(name, options) {
 
   // Analyze all listeners and parse them as tree
   this.analyzeListenerTree();
+
+  return self;
 };
 
 /**
@@ -183,7 +188,6 @@ Poplar.prototype.use = function(name, options) {
  * @return {Function}
  */
 Poplar.prototype.handler = function(name, options) {
-  var Adapter = this.adapter(name);
   var adapter = new Adapter(this, options);
 
   // create a handler from Adapter
@@ -195,15 +199,6 @@ Poplar.prototype.handler = function(name, options) {
   }
 
   return handler;
-};
-
-/**
- * Get an adapter by name.
- * @param {String} name The adapter name
- * @return {Adapter}
- */
-Poplar.prototype.adapter = function(name) {
-  return require(path.join(__dirname, 'adapters', name));
 };
 
 /**

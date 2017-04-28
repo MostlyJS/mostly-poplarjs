@@ -27,7 +27,10 @@
     "lodash": "^4.17.4",
     "nats": "^0.7.16",
     "nats-hemera": "^1.0.1",
-    "tinysonic": "^1.2.0"
+    "seamless-immutable": "^7.1.2",
+    "tinysonic": "^1.2.0",
+    "validator": "^7.0.0",
+    "xss": "^0.3.3"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",

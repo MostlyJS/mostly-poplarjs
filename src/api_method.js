@@ -6,7 +6,7 @@ module.exports = ApiMethod;
 /*!
  * Module dependencies.
  */
-var debug = require('debug')('poplar:api-method');
+var debug = require('debug')('mostly:poplarjs:api-method');
 var util = require('util');
 var inherits = util.inherits;
 var assert = require('assert');

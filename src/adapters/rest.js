@@ -6,7 +6,7 @@ module.exports = RestAdapter;
 /**
  * Module dependencies.
  */
-var debug = require('debug')('poplar:rest-adapter');
+var debug = require('debug')('mostly:poplarjs:rest-adapter');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var inherits = util.inherits;

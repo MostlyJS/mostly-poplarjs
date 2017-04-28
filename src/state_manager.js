@@ -7,7 +7,7 @@ module.exports = StateManager;
  * Module dependencies.
  */
 var EventEmitter = require('events').EventEmitter;
-var debug = require('debug')('poplar:apis');
+var debug = require('debug')('mostly:poplarjs:apis');
 var minimatch = require('minimatch');
 var util = require('util');
 var inherits = util.inherits;

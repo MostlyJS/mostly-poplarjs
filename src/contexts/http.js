@@ -7,7 +7,7 @@ module.exports = HttpContext;
  * Module dependencies.
  */
 var EventEmitter = require('events').EventEmitter;
-var debug = require('debug')('poplar:http-context');
+var debug = require('debug')('mostly:poplarjs:http-context');
 var _ = require('lodash');
 var util = require('util');
 var inherits = util.inherits;

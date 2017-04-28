@@ -1,7 +1,7 @@
 import Immutable from 'seamless-immutable';
 
 var util = require('util');
-var debug = require('debug')('boqii-plant:entity');
+var debug = require('debug')('mostly:poplarjs:entity');
 var _ = require('lodash');
 var assert = require('assert');
 var Dynamic = require('./dynamic');

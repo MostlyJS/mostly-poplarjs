@@ -6,7 +6,7 @@ module.exports = Dynamic;
 /*!
  * Module dependencies.
  */
-var debug = require('debug')('poplar:dynamic');
+var debug = require('debug')('mostly:poplarjs:dynamic');
 var _ = require('lodash');
 var assert = require('assert');
 

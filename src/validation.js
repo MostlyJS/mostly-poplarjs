@@ -1,16 +1,8 @@
-/*!
- * Expose `Validate`.
- */
-module.exports = Validate;
-
-/*!
- * Module dependencies.
- */
 var _ = require('lodash');
 var __validator__ = require('validator');
 var util = require('util');
 var helper = require('./helper');
-var debug = require('debug')('poplar:validation');
+var debug = require('debug')('mostly:poplarjs:validation');
 
 /*!
  * A collection of validators
@@ -212,7 +204,7 @@ ValidationError.prototype.any = function() {
  * ]
  * ```
  */
-function Validate(params, accepts) {
+export function Validate(params, accepts) {
 
   var validationError = new ValidationError();
   params = params || {};
@@ -331,5 +323,5 @@ Validate.method = function(name) {
  * Add default validator `required`
  */
 Validate.extend('required', function(val) {
-  return helper.isPresent(val);
+  return !helper.isEmpty(val);
 });

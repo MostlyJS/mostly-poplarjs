@@ -7,7 +7,7 @@ module.exports = ApiBuilder;
  * Module dependencies.
  */
 var EventEmitter = require('events').EventEmitter;
-var debug = require('debug')('poplar:api-builder');
+var debug = require('debug')('mostly:poplarjs:api-builder');
 var util = require('util');
 var inherits = util.inherits;
 var assert = require('assert');
