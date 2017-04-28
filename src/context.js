@@ -15,7 +15,7 @@ var assert = require('assert');
 var Helper = require('./helper');
 var Dynamic = require('./dynamic');
 
-var debug = require('debug')('mostly:poplarjs:http-context');
+var debug = require('debug')('mostly:poplarjs:context');
 
 /**
  * Create a new `Context` with the given `options`.
@@ -29,7 +29,7 @@ export default class Context extends EventEmitter {
   constructor(req, method, options) {
     super();
 
-    this.req = this.request = req;
+    this.req = req;
     this.method = method;
     this.options = options || {};
     this.args = this.buildArgs(method);
@@ -158,6 +158,7 @@ export default class Context extends EventEmitter {
    */
   getArgByName(name, options) {
     var req = this.req;
+    debug("####", req);
     var args = req.params && req.params.args !== undefined ? req.params.args :
                req.body && req.body.args !== undefined ? req.body.args :
                req.query && req.query.args !== undefined ? req.query.args :
@@ -175,7 +176,7 @@ export default class Context extends EventEmitter {
               this.req.params[name] !== undefined ? this.req.params[name] :
               (this.req.body && this.req.body[name]) !== undefined ? this.req.body[name] :
               this.req.query[name] !== undefined ? this.req.query[name] :
-              this.req.get(name);
+              undefined;
     // search these in order by name
     // req.params
     // req.body

@@ -67,10 +67,11 @@ export default class Adapter extends EventEmitter {
           path: re
         }, function (req, cb) {
           var params = match(req.path);
-          debug(```service called ${req.topic}->${req.cmd} with ${req.path},  %j
+          debug(`service called ${req.topic}->${req.cmd} with ${req.path},  %j
             => headers: %j
-            => params: %j```, params, req.headers, req.params);
-          route.handler.apply(route, req, cb);
+            => query: %j
+            => body: %j`, params, req.headers, req.query, req.body);
+          route.handler(req, cb);
         });
         //assert(router[route.verb], util.format('Method `%s` contains invalid http verb: %s', route.fullName, route.verb));
         //router[route.verb](route.path, route.handler);
