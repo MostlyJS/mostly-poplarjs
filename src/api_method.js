@@ -19,10 +19,8 @@ var Entity = require('./entity');
 var invokeValidations = require('./validation');
 var invokeSantizers = require('./sanitizer');
 
-
 /**
  * @class A wrapper to build api methods.
- *
  */
 function ApiMethod(name, options, fn) {
 

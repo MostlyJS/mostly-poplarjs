@@ -1,7 +1,7 @@
 /**
  * Module dependencies.
  */
-var debug = require('debug')('mostly:poplarjs:rest-adapter');
+var debug = require('debug')('mostly:poplarjs:adapter');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var inherits = util.inherits;
@@ -9,7 +9,10 @@ var assert = require('assert');
 var async = require('async');
 var _ = require('lodash');
 var Path = require('path');
+var pathToRegexp = require('path-to-regexp');
 var Poplar = require('./poplar');
+var Context = require('./context');
+var helper = require('./helper');
 
 /**
  * Create a dynamic value from the given value.
@@ -19,11 +22,11 @@ var Poplar = require('./poplar');
  */
 export default class Adapter extends EventEmitter {
 
-  constructor(api, options) {
+  constructor(poplar, options) {
     super();
-    this.api = api;
-    assert(api instanceof Poplar, util.format('%s must be a Poplar instance', api));
-    this.options = _.extend({}, (api.options || {}).rest, options);
+    this.poplar = poplar;
+    assert(poplar instanceof Poplar, util.format('%s must be a Poplar instance', poplar));
+    this.options = _.extend({}, (poplar.options || {}).rest, options);
     this._routes = [];
   }
 
@@ -32,27 +35,43 @@ export default class Adapter extends EventEmitter {
    */
   createHandler() {
     var adapter = this;
-    var methods = this.api.allMethods();
+    var methods = this.poplar.allMethods();
 
     function createRoutes() {
       _.each(methods, function(method) {
         adapter._routes.push({
           verb: (method.http.verb || 'all').toLowerCase(),
-          path: Path.join('/', adapter.api.basePath, method.fullPath()),
+          path: Path.join('/', adapter.poplar.basePath, method.fullPath()),
           fullName: method.fullName(),
           description: method.description,
-          handler: function(req, res, next) {
+          handler: function(req, next) {
             var methodInvocation = method.createMethodInvocation();
-            var ctx = new HttpContext(req, res, methodInvocation, adapter.options);
-            adapter.invokeMethod(ctx, methodInvocation, next);
+            var ctx = new Context(req, methodInvocation, adapter.options);
+            adapter.poplar.invokeMethodInContext(method, ctx, function(err) {
+              if (err) return next(err);
+              next(null, ctx.result);
+            });
           }
         });
       });
     }
 
+    // Register the service
     function applyRoutes() {
       _.each(adapter._routes, function(route) {
         debug('applyRoutes', route);
+        var [re, match] = helper.pathMatch(route.path);
+        adapter.poplar.trans.add({
+          topic: `poplar.${route.fullName}`,
+          cmd: `${route.verb}`,
+          path: re
+        }, function (req, cb) {
+          var params = match(req.path);
+          debug(```service called ${req.topic}->${req.cmd} with ${req.path},  %j
+            => headers: %j
+            => params: %j```, params, req.headers, req.params);
+          route.handler.apply(route, req, cb);
+        });
         //assert(router[route.verb], util.format('Method `%s` contains invalid http verb: %s', route.fullName, route.verb));
         //router[route.verb](route.path, route.handler);
       });
@@ -91,22 +110,6 @@ export default class Adapter extends EventEmitter {
     _.each(infos, function(sentence) {
       debug(_.padEnd(sentence, padEnd));
     });
-  }
-
-  /**
-   * invode method with specific context and callbacks
-   */
-  invokeMethod(ctx, method, next) {
-    var api = this.api;
-
-    async.series(
-      [api.invokeMethodInContext.bind(this.api, method, ctx)],
-      function(err) {
-        if (err) return next(err);
-        ctx.done();
-        // Do not call next middleware, the request is handled
-      }
-    );
   }
 
 }

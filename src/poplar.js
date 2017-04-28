@@ -30,7 +30,7 @@ function Poplar(trans, options) {
   // Avoid warning: possible EventEmitter memory leak detected
   this.setMaxListeners(16);
 
-  this._trans = trans;
+  this.trans = trans;
   this.options = options || {};
   this._apiBuilders = {};
   this._methods = {};
@@ -353,10 +353,6 @@ function addHookFn(proto, name) {
 Poplar.prototype.execHooks = function(when, method, ctx, next) {
   var methodName = method.fullName();
 
-  // change state
-  var currentState = util.format('%s.%s', when, methodName);
-  ctx.state.transitionTo(currentState);
-
   var stack = [];
 
   var listenerNames = this.searchListenerTree(methodName, when) || [];
@@ -407,9 +403,6 @@ Poplar.prototype.invokeMethodInContext = function(method, ctx, cb) {
     if (err) return triggerErrorAndCallBack(err);
 
     method.invoke(ctx, function(err, result) {
-      // change state
-      ctx.state.transitionTo(method.fullName());
-
       ctx.result = result;
       if (err) return triggerErrorAndCallBack(err);
 
