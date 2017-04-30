@@ -1,17 +1,15 @@
-/**
- * Module dependencies.
- */
-var debug = require('debug')('mostly:poplarjs:adapter');
-var EventEmitter = require('events').EventEmitter;
-var util = require('util');
-var inherits = util.inherits;
-var assert = require('assert');
-var async = require('async');
-var _ = require('lodash');
-var Path = require('path');
-var Poplar = require('./poplar');
-var Context = require('./context');
-var helper = require('./helper');
+import makeDebug from 'debug';
+import { EventEmitter } from 'events';
+import util from 'util';
+import assert from 'assert';
+import _ from 'lodash';
+import Path from 'path';
+
+import Poplar from './poplar';
+import Context from './context';
+import { pathMatch } from './helper';
+
+const debug = makeDebug('mostly:poplarjs:adapter');
 
 /**
  * Create a dynamic value from the given value.
@@ -23,6 +21,7 @@ export default class Adapter extends EventEmitter {
 
   constructor(poplar, options) {
     super();
+
     this.poplar = poplar;
     assert(poplar instanceof Poplar, util.format('%s must be a Poplar instance', poplar));
     this.options = _.extend({}, (poplar.options || {}).rest, options);
@@ -60,7 +59,7 @@ export default class Adapter extends EventEmitter {
     function applyRoutes() {
       _.each(adapter._routes, function(route) {
         debug('applyRoutes', route);
-        var [re, match] = helper.pathMatch(route.path);
+        var [re, match] = pathMatch(route.path);
         adapter.poplar.trans.add({
           topic: `poplar.${route.fullName}`,
           cmd: `${route.verb}`,

@@ -1,21 +1,13 @@
-/*!
- * Expose `Context`.
- */
-module.exports = Context;
+import { EventEmitter } from 'events';
+import _ from 'lodash';
+import util from 'util';
+import assert from 'assert';
+import makeDebug from 'debug';
 
-/*!
- * Module dependencies.
- */
-var EventEmitter = require('events').EventEmitter;
-var _ = require('lodash');
-var util = require('util');
-var inherits = util.inherits;
-var assert = require('assert');
+import { escapeRegex } from './helper';
+import Dynamic from './dynamic';
 
-var Helper = require('./helper');
-var Dynamic = require('./dynamic');
-
-var debug = require('debug')('mostly:poplarjs:context');
+var debug = makeDebug('mostly:poplarjs:context');
 
 /**
  * Create a new `Context` with the given `options`.
@@ -37,7 +29,6 @@ export default class Context extends EventEmitter {
 
     //req.context = this;
   }
-
 
   /**
    * Build args object from the context.
@@ -113,7 +104,7 @@ export default class Context extends EventEmitter {
           // so this only needs to happen once.
           var delims = this.options.arrayItemDelimiters;
           if (Array.isArray(delims)) {
-            delims = new RegExp(_.map(delims, Helper.escapeRegex).join('|'), 'g');
+            delims = new RegExp(_.map(delims, escapeRegex).join('|'), 'g');
             this.options.arrayItemDelimiters = delims;
           }
 

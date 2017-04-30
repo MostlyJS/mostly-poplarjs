@@ -1,178 +1,184 @@
-/*!
- * Expose `ApiBuilder`.
- */
-module.exports = ApiBuilder;
+import { EventEmitter } from 'events';
+import makeDebug from 'debug';
+import util from 'util';
+import assert from 'assert';
+import _ from 'lodash';
 
-/*!
- * Module dependencies.
- */
-var EventEmitter = require('events').EventEmitter;
-var debug = require('debug')('mostly:poplarjs:api-builder');
-var util = require('util');
-var inherits = util.inherits;
-var assert = require('assert');
-var _ = require('lodash');
+import ApiMethod from './api_method';
 
-var ApiMethod = require('./api_method');
+const debug = makeDebug('mostly:poplarjs:api-builder');
 
 /**
  * @class A wrapper to build apis.
  */
-function ApiBuilder(name, options) {
-  // call super
-  EventEmitter.call(this);
+export default class ApiBuilder extends EventEmitter {
 
-  // Avoid warning: possible EventEmitter memory leak detected
-  this.setMaxListeners(16);
+  constructor(name, options) {
+    // call super
+    super();
 
-  if (name) {
-    assert(_.isString(name) && /^[a-zA-Z0-9_]+$/g.test(name), util.format('\'%s\' is not a valid name, name must be a string, \'a-z\', \'A-Z\' and _ are allowed' , name));
+    // Avoid warning: possible EventEmitter memory leak detected
+    this.setMaxListeners(16);
+
+    if (name) {
+      assert(_.isString(name) && /^[a-zA-Z0-9_]+$/g.test(name), util.format('\'%s\' is not a valid name, name must be a string, \'a-z\', \'A-Z\' and _ are allowed' , name));
+    }
+    this.name = name || '';
+
+    this._methods = {};
+
+    // Options:
+    //   basePath: '/'
+    this.options = options || {};
+    assert(_.isPlainObject(this.options), util.format('Invalid options for ApiBuilder \'%s\'', this.name));
+
+    this.options.basePath = this.options.basePath || this.name;
   }
-  this.name = name || '';
 
-  this._methods = {};
+  /**
+   * Define ApiMethod
+   *
+   * @param {String} name: method name
+   * @param {Object} options: method options
+   * @param {Function} fn: method function
+   */
+  define(name, options, fn) {
+    var self = this;
 
-  // Options:
-  //   basePath: '/'
-  this.options = options || {};
-  assert(_.isPlainObject(this.options), util.format('Invalid options for ApiBuilder \'%s\'', this.name));
+    if (name instanceof ApiMethod) {
+      checkMethodExistance(name.name);
+      name.setApiBuilder(this);
+      // if name is a ApiMethod instance, then add it directly
+      this._methods[name.name] = name;
+    } else {
+      checkMethodExistance(name);
+      // create a new ApiMethod
+      var method = new ApiMethod(name, options, fn);
+      method.setApiBuilder(this);
+      this._methods[name] = method;
+    }
 
-  this.options.basePath = this.options.basePath || this.name;
+    function checkMethodExistance(methodName) {
+      if (self._methods[methodName]) {
+        debug('Method \'%s\' in ApiBuilder \'%s\' has been overwrited', methodName, self.name);
+      }
+    }
+  }
+
+  /**
+   * Prepend ApiMethod before a specific apiMethod
+   *
+   * @param {String} prependingName: method name about to be prepending
+   * @param {String} prependedName: method name about to be prepended
+   **/
+  prepend(prependingName, prependedName) {
+    assert(this.exists(prependingName), 'Method is about to be prepending is not exists');
+    assert(this.exists(prependedName), 'Method is about to be prepended is not exists');
+
+    var prependingMethod = this.method(prependingName);
+    this.undefine(prependingMethod);
+
+    var methods = {};
+    _.each(this._methods, function(method, name) {
+      if (prependedName === name) {
+        methods[prependingName] = prependingMethod;
+      }
+      methods[name] = method;
+    });
+
+    // overwrite _methods with new orders
+    this._methods = methods;
+  }
+
+  /**
+   * Extend an ApiBuilder
+   *
+   * @param {String} name: method name
+   * @param {Object} options: method options
+   * @param {Function} fn: method function
+   */
+  extend(builder) {
+    assert(builder instanceof ApiBuilder, util.format('%s is not a valid ApiBuilder', builder));
+
+    this.name = builder.name;
+
+    this.options = _.clone(builder.options);
+
+    var methods = builder.methods();
+    var events = builder._events;
+    var self = this;
+
+    // loop and define all apiBuilder's methods
+    _.each(methods, function(method) {
+      var newMethod = method.clone();
+      self.define(newMethod);
+    });
+
+    // loop and add all ApiBuilder listeners
+    _.each(events, function(fns, type) {
+      if (Array.isArray(fns)) {
+        _.each(fns, function(fn) {
+          if (_.isFunction(fn)) {
+            self.on(type, fn);
+          }
+        });
+      } else if (_.isFunction(fns)) {
+        self.on(type, fns);
+      }
+    });
+  }
+
+  /**
+   * Get method by name
+   *
+   * @param {String} name: method name
+   */
+  method(name) {
+    return this._methods[name];
+  }
+
+  /**
+   * check if a method exists
+   *
+   * @param {String} name: method name
+   */
+  exists(name) {
+    return !!this.method(name);
+  }
+
+  /**
+   * undefine method by name
+   *
+   * @param {String} name: method name
+   */
+  undefine(name) {
+    delete this._methods[name];
+  }
+
+  /**
+   * Get all methods
+   */
+  methods() {
+    return this._methods || {};
+  }
+
+
 }
 
 /*!
- * Inherit from `EventEmitter`.
+ * Build hook fn
  */
-inherits(ApiBuilder, EventEmitter);
-
-/**
- * Define ApiMethod
- *
- * @param {String} name: method name
- * @param {Object} options: method options
- * @param {Function} fn: method function
- */
-ApiBuilder.prototype.define = function(name, options, fn) {
-  var self = this;
-
-  if (name instanceof ApiMethod) {
-    checkMethodExistance(name.name);
-    name.setApiBuilder(this);
-    // if name is a ApiMethod instance, then add it directly
-    this._methods[name.name] = name;
-  } else {
-    checkMethodExistance(name);
-    // create a new ApiMethod
-    var method = new ApiMethod(name, options, fn);
-    method.setApiBuilder(this);
-    this._methods[name] = method;
-  }
-
-  function checkMethodExistance(methodName) {
-    if (self._methods[methodName]) {
-      debug('Method \'%s\' in ApiBuilder \'%s\' has been overwrited', methodName, self.name);
-    }
-  }
-};
-
-/**
- * Prepend ApiMethod before a specific apiMethod
- *
- * @param {String} prependingName: method name about to be prepending
- * @param {String} prependedName: method name about to be prepended
- **/
-ApiBuilder.prototype.prepend = function(prependingName, prependedName) {
-  assert(this.exists(prependingName), 'Method is about to be prepending is not exists');
-  assert(this.exists(prependedName), 'Method is about to be prepended is not exists');
-
-  var prependingMethod = this.method(prependingName);
-  this.undefine(prependingMethod);
-
-  var methods = {};
-  _.each(this._methods, function(method, name) {
-    if (prependedName === name) {
-      methods[prependingName] = prependingMethod;
-    }
-    methods[name] = method;
-  });
-
-  // overwrite _methods with new orders
-  this._methods = methods;
-};
-
-/**
- * Extend an ApiBuilder
- *
- * @param {String} name: method name
- * @param {Object} options: method options
- * @param {Function} fn: method function
- */
-ApiBuilder.prototype.extend = function(builder) {
-  assert(builder instanceof ApiBuilder, util.format('%s is not a valid ApiBuilder', builder));
-
-  this.name = builder.name;
-
-  this.options = _.clone(builder.options);
-
-  var methods = builder.methods();
-  var events = builder._events;
-  var self = this;
-
-  // loop and define all apiBuilder's methods
-  _.each(methods, function(method) {
-    var newMethod = method.clone();
-    self.define(newMethod);
-  });
-
-  // loop and add all ApiBuilder listeners
-  _.each(events, function(fns, type) {
-    if (Array.isArray(fns)) {
-      _.each(fns, function(fn) {
-        if (_.isFunction(fn)) {
-          self.on(type, fn);
-        }
-      });
-    } else if (_.isFunction(fns)) {
-      self.on(type, fns);
-    }
-  });
-};
-
-/**
- * Get method by name
- *
- * @param {String} name: method name
- */
-ApiBuilder.prototype.method = function(name) {
-  return this._methods[name];
-};
-
-/**
- * check if a method exists
- *
- * @param {String} name: method name
- */
-ApiBuilder.prototype.exists = function(name) {
-  return !!this.method(name);
-};
-
-/**
- * undefine method by name
- *
- * @param {String} name: method name
- */
-ApiBuilder.prototype.undefine = function(name) {
-  delete this._methods[name];
-};
-
-/**
- * Get all methods
- */
-ApiBuilder.prototype.methods = function() {
-  return this._methods || {};
-};
-
-
+function addHookFn(proto, name) {
+  proto[name] = function() {
+    var args = [].splice.call(arguments, 0);
+    var fn = args.splice(args.length - 1)[0];
+    fn = _.isFunction(fn) ? fn : undefined;
+    var self = this;
+    _.each(args, function(arg) {
+      self.on(util.format('%s.%s.%s', name, self.name, arg), fn);
+    });
+  };
+}
 /**
  * Execute the given function before the matched method string.
  *
@@ -285,17 +291,3 @@ addHookFn(ApiBuilder.prototype, 'after');
  */
 addHookFn(ApiBuilder.prototype, 'afterError');
 
-/*!
- * Build hook fn
- */
-function addHookFn(proto, name) {
-  proto[name] = function() {
-    var args = [].splice.call(arguments, 0);
-    var fn = args.splice(args.length - 1)[0];
-    fn = _.isFunction(fn) ? fn : undefined;
-    var self = this;
-    _.each(args, function(arg) {
-      self.on(util.format('%s.%s.%s', name, self.name, arg), fn);
-    });
-  };
-}

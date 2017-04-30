@@ -11,7 +11,7 @@ var __validator__ = require('validator');
 var xss = require('xss');
 var debug = require('debug')('mostly:poplarjs:sanitizer');
 
-var Helper = require('./helper');
+import { isEmpty }  from './helper';
 
 /*!
  * @class A collection of sanitizers
@@ -102,7 +102,7 @@ function Sanitize(params, accepts) {
     var val = params[name];
 
     var sanitizers = _.extend({}, accept.sanitizes);
-    if (sanitizers && _.isPlainObject(sanitizers) && !Helper.isEmpty(val)) {
+    if (sanitizers && _.isPlainObject(sanitizers) && !isEmpty(val)) {
       _.each(sanitizers, function(sanitizerOpts, sanitizerName) {
 
         // if sanitizer is a custom function, then execute it

@@ -1,14 +1,12 @@
-/**
- * Expose `Dynamic`.
- */
-module.exports = Dynamic;
 
 /*!
  * Module dependencies.
  */
-var debug = require('debug')('mostly:poplarjs:dynamic');
-var _ = require('lodash');
-var assert = require('assert');
+import makeDebug from 'debug';
+import _ from 'lodash';
+import assert from 'assert';
+
+const debug = makeDebug('mostly:poplarjs:dynamic');
 
 /**
  * @class
@@ -17,101 +15,100 @@ var assert = require('assert');
  * @param {*} val The value object
  * @param {Context} ctx The Context
  */
-function Dynamic(val, ctx) {
-  this.val = val;
-  this.ctx = ctx;
-}
+export default class Dynamic {
+  constructor(val, ctx) {
+    this.val = val;
+    this.ctx = ctx;
+  }
 
-/*!
- * Object containing converter functions.
- */
-Dynamic.converters = {};
+  /**
+   * Define a named type conversion. The conversion is used when a
+   * `ApiMethod` argument defines a type with the given `name`.
+   *
+   * ```js
+   * Dynamic.define('MyType', function(val, ctx) {
+   *   // use the val and ctx objects to return the concrete value
+   *   return new MyType(val);
+   * });
+   * ```
+   *
+   * @param {String} name The type name
+   * @param {Function} converter
+   */
+  static define(name, converter) {
+    Dynamic.converters[name] = converter;
+  }
 
-/**
- * Define a named type conversion. The conversion is used when a
- * `ApiMethod` argument defines a type with the given `name`.
- *
- * ```js
- * Dynamic.define('MyType', function(val, ctx) {
- *   // use the val and ctx objects to return the concrete value
- *   return new MyType(val);
- * });
- * ```
- *
- * @param {String} name The type name
- * @param {Function} converter
- */
-Dynamic.define = function(name, converter) {
-  this.converters[name] = converter;
-};
+  /**
+   * undefine a converter via its name
+   */
+  static undefine(name) {
+    delete Dynamic.converters[name];
+  }
 
-/**
- * undefine a converter via its name
- */
-Dynamic.undefine = function(name) {
-  delete this.converters[name];
-};
+  /**
+   * Is the given type supported.
+   *
+   * @param {String} type
+   * @returns {Boolean}
+   */
+  static canConvert(type) {
+    return !!Dynamic.getConverter(type);
+  }
 
-/**
- * Is the given type supported.
- *
- * @param {String} type
- * @returns {Boolean}
- */
-Dynamic.canConvert = function(type) {
-  return !!this.getConverter(type);
-};
+  /**
+   * Get converter by type name.
+   *
+   * @param {String} type
+   * @returns {Function}
+   */
+  static getConverter(type) {
+    return Dynamic.converters[type];
+  }
 
-/**
- * Get converter by type name.
- *
- * @param {String} type
- * @returns {Function}
- */
-Dynamic.getConverter = function(type) {
-  return this.converters[type];
-};
-
-/**
- * Shortcut method for convert value
- *
- * @param {String} val
- * @param {String} type
- * @param {Object} ctx
- * @returns {Object}
- */
-Dynamic.convert = function(val, toType, ctx) {
-  if (Array.isArray(toType)) {
-    if (!Array.isArray(val)) {
-      if (val === undefined || val === '') {
-        val = [];
-      } else {
-        val = [val];
+  /**
+   * Shortcut method for convert value
+   *
+   * @param {String} val
+   * @param {String} type
+   * @param {Object} ctx
+   * @returns {Object}
+   */
+  static convert(val, toType, ctx) {
+    if (Array.isArray(toType)) {
+      if (!Array.isArray(val)) {
+        if (val === undefined || val === '') {
+          val = [];
+        } else {
+          val = [val];
+        }
       }
+
+      return Dynamic.convert(val, toType[0], ctx);
     }
 
-    return Dynamic.convert(val, toType[0], ctx);
+    if (Array.isArray(val)) {
+      return _.map(val, function(v) {
+        return Dynamic.convert(v, toType, ctx);
+      });
+    }
+    return (new Dynamic(val, ctx)).to(toType);
   }
 
-  if (Array.isArray(val)) {
-    return _.map(val, function(v) {
-      return Dynamic.convert(v, toType, ctx);
-    });
+  /**
+   * Convert the dynamic value to the given type.
+   *
+   * @param {String} type
+   * @returns {*} The concrete value
+   */
+  to(type) {
+    var converter = Dynamic.getConverter(type);
+    assert(converter, 'No Type converter defined for ' + type);
+    return converter(this.val, this.ctx);
   }
-  return (new Dynamic(val, ctx)).to(toType);
-};
 
-/**
- * Convert the dynamic value to the given type.
- *
- * @param {String} type
- * @returns {*} The concrete value
- */
-Dynamic.prototype.to = function(type) {
-  var converter = this.constructor.getConverter(type);
-  assert(converter, 'No Type converter defined for ' + type);
-  return converter(this.val, this.ctx);
-};
+  
+}
 
 /**
  * Built in type converters...
@@ -121,6 +118,7 @@ Dynamic.prototype.to = function(type) {
  *   boolean
  *   any
  */
+Dynamic.converters = {};
 
 Dynamic.define('number', function convertNumber(val) {
   if (val === 0) return val;
@@ -164,3 +162,5 @@ Dynamic.define('boolean', function convertBoolean(val) {
 Dynamic.define('any', function convertAny(val) {
   return val;
 });
+
+console.log(Dynamic.converters);

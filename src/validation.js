@@ -1,7 +1,8 @@
 var _ = require('lodash');
 var __validator__ = require('validator');
 var util = require('util');
-var helper = require('./helper');
+import { isEmpty } from './helper';
+
 var debug = require('debug')('mostly:poplarjs:validation');
 
 /*!
@@ -261,7 +262,7 @@ export function Validate(params, accepts) {
     }
 
     if (validators && _.isPlainObject(validators)) {
-      if (helper.isEmpty(val)) {
+      if (isEmpty(val)) {
         // check if value exists, if not, then check whether the value is required
         if (validators.hasOwnProperty('required')) {
           performValidator(name, val, validators.required, 'required');
@@ -323,5 +324,5 @@ Validate.method = function(name) {
  * Add default validator `required`
  */
 Validate.extend('required', function(val) {
-  return !helper.isEmpty(val);
+  return !isEmpty(val);
 });
