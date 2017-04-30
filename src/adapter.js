@@ -9,7 +9,6 @@ var assert = require('assert');
 var async = require('async');
 var _ = require('lodash');
 var Path = require('path');
-var pathToRegexp = require('path-to-regexp');
 var Poplar = require('./poplar');
 var Context = require('./context');
 var helper = require('./helper');
@@ -49,6 +48,7 @@ export default class Adapter extends EventEmitter {
             var ctx = new Context(req, methodInvocation, adapter.options);
             adapter.poplar.invokeMethodInContext(method, ctx, function(err) {
               if (err) return next(err);
+              debug('service called result %j', ctx.result);
               next(null, ctx.result);
             });
           }
@@ -66,15 +66,14 @@ export default class Adapter extends EventEmitter {
           cmd: `${route.verb}`,
           path: re
         }, function (req, cb) {
-          var params = match(req.path);
-          debug(`service called ${req.topic}->${req.cmd} with ${req.path},  %j
-            => headers: %j
-            => query: %j
-            => body: %j`, params, req.headers, req.query, req.body);
+          req.params = match(req.path);
+          debug(`service called ${req.topic}->${req.cmd} with ${req.path},
+          => headers: %j
+          => query: %j
+          => params: %j
+          => body: %j`, req.headers, req.query, req.params, req.body);
           route.handler(req, cb);
         });
-        //assert(router[route.verb], util.format('Method `%s` contains invalid http verb: %s', route.fullName, route.verb));
-        //router[route.verb](route.path, route.handler);
       });
     }
 

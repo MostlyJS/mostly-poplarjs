@@ -216,12 +216,12 @@ ApiMethod.prototype.invoke = function(ctx, cb) {
   options.args = formattedArgs;
 
   // define the callback
-  function callback(err) {
+  function callback(err, data) {
     if (err) {
       return cb(err);
     }
 
-    var result = ApiMethod.toResult([].slice.call(arguments, 1)[0], presenter, presenterSource, options);
+    var result = ApiMethod.toResult(data, presenter, presenterSource, options);
     ctx.result = result;
 
     debug('- %s - result', self.fullName(), result);

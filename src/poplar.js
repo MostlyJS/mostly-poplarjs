@@ -17,6 +17,7 @@ var minimatch = require('minimatch');
 var Adapter = require('./adapter');
 var Dynamic = require('./dynamic');
 var ApiBuilder = require('./api_builder');
+var debug = require('debug')('mostly:poplarjs:poplar');
 
 /**
  * Poplar constructor
@@ -403,6 +404,7 @@ Poplar.prototype.invokeMethodInContext = function(method, ctx, cb) {
     if (err) return triggerErrorAndCallBack(err);
 
     method.invoke(ctx, function(err, result) {
+      debug('poplar.invokeMethodInContext', result);
       ctx.result = result;
       if (err) return triggerErrorAndCallBack(err);
 

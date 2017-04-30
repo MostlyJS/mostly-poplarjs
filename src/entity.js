@@ -11,7 +11,7 @@ var Dynamic = require('./dynamic');
  */
 export default class Entity {
   constructor(name, definitions) {
-    this._name = name || 'Entity';
+    this._name = name || 'UnNamed';
     this._mappings = {};
     this._excepts = false;
     this.define(definitions);
@@ -208,6 +208,7 @@ export default class Entity {
    * @param {Function} converter: value converter, which can accept one parameter
    */
   parse(input, options, converter) {
+    //debug('entity.parse', input, options, converter);
     var originalObj;
     var result = {};
     var self = this;
@@ -244,6 +245,7 @@ export default class Entity {
     } else {
       let keys = Object.keys(self._mappings);
       if (_.isEmpty(keys)) {
+        debug('%s entity has no mappings', self._name);
         // if no exposes, return
         return result;
       } else
@@ -257,7 +259,7 @@ export default class Entity {
         }
         // sort keys and put id at the first
         keys = _.sortBy(keys);
-        if (_.pull(keys, 'id')) {
+        if (keys.indexOf('id') > -1) {
           keys.unshift('id');
         }
         //debug(self._name, 'mappings', keys, 'excepts', self._excepts);
@@ -323,10 +325,7 @@ export default class Entity {
 
           _.set(result, k, val);
         });
-        // for convenience
-        if (!keys.id && !result.id) {
-          result.id = originalObj._id || originalObj.id;
-        }
+
         return result;
       }
     }

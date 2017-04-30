@@ -158,7 +158,6 @@ export default class Context extends EventEmitter {
    */
   getArgByName(name, options) {
     var req = this.req;
-    debug("####", req);
     var args = req.params && req.params.args !== undefined ? req.params.args :
                req.body && req.body.args !== undefined ? req.body.args :
                req.query && req.query.args !== undefined ? req.query.args :
