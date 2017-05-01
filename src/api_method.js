@@ -58,7 +58,6 @@ export default class ApiMethod {
     }
 
     this.presenter = options.presenter;
-    console.log("###", this.name, typeof this.presenter);
     if (this.presenter) {
       assert(Entity.isEntity(this.presenter), 'presenter must be a valid Entity');
     }
