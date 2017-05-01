@@ -1,6 +1,6 @@
 {
   "name": "mostly-poplarjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MostlyJS microservice integration of poplarjs",
   "author": "Forafish",
   "license": "MIT",
