@@ -295,7 +295,7 @@ export default class ApiMethod {
       return _.map(uarg, function(arg, ix) {
         // when coercing array items, use only name and type,
         // ignore all other root settings like "required"
-        return coerceAccepts(arg, {
+        return ApiMethod.coerceAccepts(arg, {
           name: name + '[' + ix + ']',
           type: desc.type[0]
         });
@@ -363,7 +363,7 @@ export default class ApiMethod {
    */
   static convertToBasicType(type) {
     if (_.isArray(type)) {
-      return _.map(type, convertToBasicType);
+      return _.map(type, ApiMethod.convertToBasicType);
     }
 
     if (typeof type === 'object') {
@@ -539,7 +539,7 @@ export default class ApiMethod {
 /*!
  * Bad Argument Error
  */
-class badArgumentError {
+class BadArgumentError {
   constructor(msg) {
     var err = new Error(msg);
     err.statusCode = 400;

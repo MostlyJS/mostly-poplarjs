@@ -151,7 +151,6 @@ Dynamic.define('boolean', function convertBoolean(val) {
         default:
           return true;
       }
-      break;
     case 'number':
       return val !== 0;
     default:

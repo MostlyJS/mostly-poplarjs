@@ -97,7 +97,9 @@ export default class Context extends EventEmitter {
           try {
             val = JSON.parse(val);
             parsed = true;
-          } catch (e) {}
+          } catch (e) {
+            debug('Faild to parse json', val);
+          }
         }
         if (!parsed && ctx.options.arrayItemDelimiters) {
           // Construct delimiter regex if input was an array. Overwrite option

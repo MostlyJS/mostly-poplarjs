@@ -21,7 +21,7 @@ export function isEmpty(val) {
  * check if a value is present
  */
 export function isPresent(val) {
-  return !Helper.isEmpty(val);
+  return !isEmpty(val);
 }
 
 /*!
@@ -36,7 +36,7 @@ export function decodeParam(param) {
   try {
     return decodeURIComponent(param);
   } catch (_) {
-    throw createError(400, 'failed to decode param "' + param + '"');
+    throw new Error('Failed to decode param "' + param + '"');
   }
 }
 
