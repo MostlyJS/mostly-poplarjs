@@ -5,8 +5,8 @@ import _ from 'lodash';
 import Path from 'path';
 import onFinished from 'on-finished';
 import pathToRegexp from 'path-to-regexp';
+import Entity from 'mostly-entity';
 
-import Entity from './entity';
 import invokeValidations from './validation';
 import invokeSantizers from './sanitizer';
 
@@ -58,6 +58,7 @@ export default class ApiMethod {
     }
 
     this.presenter = options.presenter;
+    console.log("###", this.name, typeof this.presenter);
     if (this.presenter) {
       assert(Entity.isEntity(this.presenter), 'presenter must be a valid Entity');
     }

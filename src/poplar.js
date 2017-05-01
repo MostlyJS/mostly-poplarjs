@@ -5,9 +5,9 @@ import path from 'path';
 import _ from 'lodash';
 import minimatch from 'minimatch';
 import makeDebug from 'debug';
+import { Dynamic } from 'mostly-entity';
 
 import Adapter from './adapter';
-import Dynamic from './dynamic';
 import ApiBuilder from './api_builder';
 
 const debug = makeDebug('mostly:poplarjs:poplar');

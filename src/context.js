@@ -3,9 +3,9 @@ import _ from 'lodash';
 import util from 'util';
 import assert from 'assert';
 import makeDebug from 'debug';
+import { Dynamic } from 'mostly-entity';
 
 import { escapeRegex } from './helper';
-import Dynamic from './dynamic';
 
 var debug = makeDebug('mostly:poplarjs:context');
 

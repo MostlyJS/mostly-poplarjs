@@ -2486,6 +2486,14 @@ mocha@^3.3.0:
     mkdirp "0.5.1"
     supports-color "3.1.2"
 
+mostly-entity@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/mostly-entity/-/mostly-entity-1.0.3.tgz#56d80af957167815bb83af04fab20789ba6b9d68"
+  dependencies:
+    debug "^2.6.6"
+    lodash "^4.17.4"
+    seamless-immutable "^7.1.2"
+
 ms@0.7.1:
   version "0.7.1"
   resolved "http://registry.npm.taobao.org/ms/download/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
