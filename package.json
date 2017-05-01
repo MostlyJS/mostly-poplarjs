@@ -27,7 +27,7 @@
     "debug": "^2.6.6",
     "lodash": "^4.17.4",
     "minimatch": "^3.0.3",
-    "mostly-entity": "^1.0.3",
+    "mostly-entity": "^1.0.4",
     "nats": "^0.7.16",
     "on-finished": "^2.3.0",
     "path-to-regexp": "^1.7.0",
