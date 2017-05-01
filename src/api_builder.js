@@ -27,6 +27,8 @@ export default class ApiBuilder extends EventEmitter {
 
     this._methods = {};
 
+    this._application = null;
+
     // Options:
     //   basePath: '/'
     this.options = options || {};
@@ -128,6 +130,26 @@ export default class ApiBuilder extends EventEmitter {
     });
   }
 
+  act(method, options, cb) {
+    let prefix = options.prefix || 'poplar';
+    debug('apiBuilder.act', `${prefix}.${this.name}.${method}`);
+    this._application.trans.act({
+      topic: `${prefix}.${this.name}.${method}`,
+      cmd: options.verb || 'all',
+      path: `/${options.path || ''}`,
+      headers: options.headers || {},
+      query: options.query || {},
+      body: options.body || {}
+    }, cb);
+  }
+
+  /**
+   * set Application
+   */
+  setApplication(app) {
+    this._application = app;
+  }
+
   /**
    * Get method by name
    *
@@ -179,6 +201,7 @@ function addHookFn(proto, name) {
     });
   };
 }
+
 /**
  * Execute the given function before the matched method string.
  *

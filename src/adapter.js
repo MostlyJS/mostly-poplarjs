@@ -19,12 +19,12 @@ const debug = makeDebug('mostly:poplarjs:adapter');
  */
 export default class Adapter extends EventEmitter {
 
-  constructor(poplar, options) {
+  constructor(app, options) {
     super();
 
-    this.poplar = poplar;
-    assert(poplar instanceof Poplar, util.format('%s must be a Poplar instance', poplar));
-    this.options = _.extend({}, (poplar.options || {}).rest, options);
+    this._application = app;
+    assert(app instanceof Poplar, util.format('%s must be a Poplar instance', app));
+    this.options = _.extend({}, (app.options || {}).rest, options);
     this._routes = [];
   }
 
@@ -33,19 +33,19 @@ export default class Adapter extends EventEmitter {
    */
   createHandler() {
     var adapter = this;
-    var methods = this.poplar.allMethods();
+    var methods = this._application.allMethods();
 
     function createRoutes() {
       _.each(methods, function(method) {
         adapter._routes.push({
           verb: (method.http.verb || 'all').toLowerCase(),
-          path: Path.join('/', adapter.poplar.basePath, method.fullPath()),
+          path: Path.join('/', adapter._application.basePath, method.fullPath()),
           fullName: method.fullName(),
           description: method.description,
           handler: function(req, next) {
             var methodInvocation = method.createMethodInvocation();
             var ctx = new Context(req, methodInvocation, adapter.options);
-            adapter.poplar.invokeMethodInContext(method, ctx, function(err) {
+            adapter._application.invokeMethodInContext(method, ctx, function(err) {
               if (err) return next(err);
               debug('service called result %j', ctx.result);
               next(null, ctx.result);
@@ -60,7 +60,7 @@ export default class Adapter extends EventEmitter {
       _.each(adapter._routes, function(route) {
         debug('applyRoutes', route);
         var [re, match] = pathMatch(route.path);
-        adapter.poplar.trans.add({
+        adapter._application.trans.add({
           topic: `poplar.${route.fullName}`,
           cmd: `${route.verb}`,
           path: re
