@@ -46,7 +46,7 @@ That's all, the service will register itself with NATS and can be called remotel
 
 ## RESTful Gateway
 
-To expose the service as RESTful api, you need only setup a simple express gateway server using [mostly-poplarjs-rest](http://https://github.com/MostlyJS/mostly-poplarjs-rest)
+To expose the service as RESTful api, you need only setup a simple express gateway server using [mostly-poplarjs-rest](https://github.com/MostlyJS/mostly-poplarjs-rest)
 
 # License
 
