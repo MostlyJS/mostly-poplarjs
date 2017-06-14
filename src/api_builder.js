@@ -184,6 +184,16 @@ export default class ApiBuilder extends EventEmitter {
     return this._methods || {};
   }
 
+  /**
+   * Remove existing hooks
+   */
+  removeHooks = function(hook, ...events) {
+    events.forEach(event => {
+      var eventName = util.format('%s.%s.%s', hook, this.name, event);
+      debug('Remove hook', eventName);
+      this.removeAllListeners(eventName);
+    });
+  }
 
 }
 
@@ -193,11 +203,24 @@ export default class ApiBuilder extends EventEmitter {
 function addHookFn(proto, name) {
   proto[name] = function() {
     var args = [].splice.call(arguments, 0);
+
     var fn = args.splice(args.length - 1)[0];
     fn = _.isFunction(fn) ? fn : undefined;
+
+    var options = {};
+    if (_.isPlainObject(args[args.length - 1])) {
+      options = args.splice(args.length - 1)[0];
+    }
+
     var self = this;
     _.each(args, function(arg) {
-      self.on(util.format('%s.%s.%s', name, self.name, arg), fn);
+      var event = util.format('%s.%s.%s', name, self.name, arg);
+      // remove old listeners if redefine is true
+      if (options.redefine) {
+        debug('Redefine hook', event);
+        self.removeAllListeners(event);
+      }
+      self.on(event, fn);
     });
   };
 }
@@ -232,6 +255,7 @@ function addHookFn(proto, name) {
  * ```
  *
  * @param {String} methodMatch The glob to match a method string
+ * @options {Object} options
  * @callback {Function} hook
  * @param {Context} ctx The adapter specific context
  * @param {Function} next Call with an optional error object
@@ -266,6 +290,7 @@ addHookFn(ApiBuilder.prototype, 'before');
  * ```
  *
  * @param {String} methodMatch The glob to match a method string
+ * @options {Object} options
  * @callback {Function} hook
  * @param {Context} ctx The adapter specific context
  * @param {Function} next Call with an optional error object
@@ -307,6 +332,7 @@ addHookFn(ApiBuilder.prototype, 'after');
  * ```
  *
  * @param {String} methodMatch The glob to match a method string
+ * @options {Object} options
  * @callback {Function} hook
  * @param {Context} ctx The adapter specific context
  * @param {Function} next Call with an optional error object
