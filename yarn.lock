@@ -345,7 +345,7 @@ babel-plugin-check-es2015-constants@^6.22.0:
 
 babel-plugin-root-import@^5.1.0:
   version "5.1.0"
-  resolved "http://registry.npm.taobao.org/babel-plugin-root-import/download/babel-plugin-root-import-5.1.0.tgz#80ea1cd5945b463a5e3f7e204a69478c573e328c"
+  resolved "https://registry.yarnpkg.com/babel-plugin-root-import/-/babel-plugin-root-import-5.1.0.tgz#80ea1cd5945b463a5e3f7e204a69478c573e328c"
   dependencies:
     slash "^1.0.0"
 
@@ -2060,10 +2060,6 @@ json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "http://registry.npm.taobao.org/json-stringify-safe/download/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
 
-json3@3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/json3/-/json3-3.2.4.tgz#689c589e7ca9340c7ee4949e0d105bc5bf159f21"
-
 json3@3.3.2:
   version "3.3.2"
   resolved "http://registry.npm.taobao.org/json3/download/json3-3.3.2.tgz#3c0434743df93e2f5c42aee7b19bcb483575f4e1"
@@ -2390,10 +2386,11 @@ mocha@^3.3.0:
     mkdirp "0.5.1"
     supports-color "3.1.2"
 
-mostly-entity@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/mostly-entity/-/mostly-entity-1.0.3.tgz#56d80af957167815bb83af04fab20789ba6b9d68"
+mostly-entity@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/mostly-entity/-/mostly-entity-1.0.6.tgz#1b8a4333e2e9ee15565cf110bd3ac4c3e6824b07"
   dependencies:
+    babel-polyfill "^6.23.0"
     debug "^2.6.6"
     lodash "^4.17.4"
     seamless-immutable "^7.1.2"
@@ -2680,12 +2677,6 @@ pinkie@^2.0.0:
 pluralize@^1.2.1:
   version "1.2.1"
   resolved "http://registry.npm.taobao.org/pluralize/download/pluralize-1.2.1.tgz#d1a21483fd22bb41e58a12fa3421823140897c45"
-
-polyfill@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/polyfill/-/polyfill-0.1.0.tgz#ded507cb76802804834b3385dfd3ba2e51004c3d"
-  dependencies:
-    json3 "3.2.4"
 
 prelude-ls@~1.1.2:
   version "1.1.2"

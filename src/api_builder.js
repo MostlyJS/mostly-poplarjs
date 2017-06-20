@@ -187,7 +187,7 @@ export default class ApiBuilder extends EventEmitter {
   /**
    * Remove existing hooks
    */
-  removeHooks = function(hook, ...events) {
+  removeHooks(hook, ...events) {
     events.forEach(event => {
       var eventName = util.format('%s.%s.%s', hook, this.name, event);
       debug('Remove hook', eventName);
