@@ -133,7 +133,7 @@ export default class Context extends EventEmitter {
       }
 
       if (o.hasOwnProperty('default')) {
-        val = val || o.default;
+        val = (val !== undefined && val !== null) ? val : o.default;
       }
 
       // set the argument value
