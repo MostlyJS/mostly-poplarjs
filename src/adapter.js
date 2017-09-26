@@ -45,7 +45,7 @@ export default class Adapter extends EventEmitter {
           handler: function(req, next) {
             var methodInvocation = method.createMethodInvocation();
             var ctx = new Context(req, methodInvocation, adapter.options);
-            adapter._application.invokeMethodInContext(method, ctx, function(err) {
+            adapter._application.invokeMethodInContext(methodInvocation, ctx, function(err) {
               if (err) return next(err);
               debug('service called result %j', ctx.result);
               next(null, ctx.result);

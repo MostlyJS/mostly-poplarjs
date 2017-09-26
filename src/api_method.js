@@ -6,11 +6,14 @@ import Path from 'path';
 import onFinished from 'on-finished';
 import pathToRegexp from 'path-to-regexp';
 import Entity from 'mostly-entity';
+import SuperError from 'super-error';
 
 import invokeValidations from './validation';
 import invokeSantizers from './sanitizer';
 
 const debug = makeDebug('mostly:poplarjs:api-method');
+
+const ValidationError = SuperError.subclass('ValidationError');
 
 /**
  * @class A wrapper to build api methods.
@@ -59,7 +62,7 @@ export default class ApiMethod {
 
     this.presenter = options.presenter;
     if (this.presenter) {
-      assert(Entity.isEntity(this.presenter), 'presenter must be a valid Entity');
+      assert(this.presenter.parse, 'presenter must be a valid Entity');
     }
 
     this.presenterSource = options.presenterSource;
@@ -72,7 +75,7 @@ export default class ApiMethod {
    * Create a MethodInvocation instance for invoking
    */
   createMethodInvocation() {
-    return new MethodInvocation(...this.__original).init();
+    return new MethodInvocation(...this.__original).init(this._apiBuilder);
   }
 
   /*
@@ -229,12 +232,10 @@ export default class ApiMethod {
 
     // If validation failed, then return errors
     if (validationErrors && validationErrors.any()) {
-      return callback({
-        validations: {
-          message: validationErrors.toHuman(),
-          errors: validationErrors.asJSON()
-        }
-      });
+      return callback(new ValidationError(
+        validationErrors.toHuman(), // message
+        validationErrors.asJSON()
+      ));
     }
 
     debug('- %s - invoke with', self.fullName(), [formattedArgs, callback]);
@@ -565,7 +566,9 @@ class MethodInvocation extends ApiMethod {
   /**
    * method invocation statuses
    */
-  init() {
+  init(apiBuilder) {
+    this.setApiBuilder(apiBuilder);
+
     this.isSanitized = false;
     this.isValidated = false;
 

@@ -3,7 +3,7 @@ import util from 'util';
 import assert from 'assert';
 import path from 'path';
 import _ from 'lodash';
-import minimatch from 'minimatch';
+import micromatch from 'micromatch';
 import makeDebug from 'debug';
 import { Dynamic } from 'mostly-entity';
 
@@ -240,7 +240,7 @@ export default class Poplar extends EventEmitter {
     var listenerNames = [];
     var fullType = util.format('%s.%s', type, methodName);
     _.each(allListenerNames, function(name) {
-      if (minimatch(fullType, name)) {
+      if (micromatch.isMatch(fullType, name)) {
         listenerNames.push(name);
       }
     });

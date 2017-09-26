@@ -1,11 +1,3 @@
-/*!
- * Expose `Sanitize`.
- */
-module.exports = Sanitize;
-
-/*!
- * Module dependencies.
- */
 var _ = require('lodash');
 var __validator__ = require('validator');
 var xss = require('xss');
@@ -93,7 +85,7 @@ Sanitizer.xss = xss;
  * ]
  * ```
  */
-function Sanitize(params, accepts) {
+export default function Sanitize(params, accepts) {
   params = params || {};
   accepts = accepts || [];
 

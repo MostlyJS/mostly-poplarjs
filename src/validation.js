@@ -205,7 +205,7 @@ ValidationError.prototype.any = function() {
  * ]
  * ```
  */
-export function Validate(params, accepts) {
+export default function Validate(params, accepts) {
 
   var validationError = new ValidationError();
   params = params || {};
@@ -218,7 +218,8 @@ export function Validate(params, accepts) {
     // else find cooresponding validator in built in Validator
     if (_.isFunction(validatorOpts)) {
       try {
-        var result = validatorOpts(val, params);
+        // validate string only
+        var result = validatorOpts(val + '', params);
         if (result) {
           validationError.add(name, validatorName, result);
         }
@@ -229,7 +230,7 @@ export function Validate(params, accepts) {
 
       if (!validatorOpts) { return; }
       var validator = Validator[validatorName];
-      var args = [val];
+      var args = [val + '']; // validate string only
 
       var message = _.isString(validatorOpts) ? validatorOpts : validatorOpts.message;
 
