@@ -397,7 +397,7 @@ export default class ApiMethod {
       case 'date':
         return new Date(value);
       case 'number':
-        return Number(value).valueOf();
+        return value === ''? null : Number(value).valueOf();
       case 'boolean':
         return Boolean(value).valueOf();
       // Other types such as 'object', 'array',

@@ -213,13 +213,13 @@ export default function Validate(params, accepts) {
 
   var performValidator = function(name, val, validatorOpts, validatorName) {
     validatorOpts = validatorOpts || {};
-
+    val = (val === undefined || val === null)? val : val + ''; // validate string only
+    
     // if validator is a custom function, then execute it
     // else find cooresponding validator in built in Validator
     if (_.isFunction(validatorOpts)) {
       try {
-        // validate string only
-        var result = validatorOpts(val + '', params);
+        var result = validatorOpts(val, params);
         if (result) {
           validationError.add(name, validatorName, result);
         }
@@ -230,7 +230,7 @@ export default function Validate(params, accepts) {
 
       if (!validatorOpts) { return; }
       var validator = Validator[validatorName];
-      var args = [val + '']; // validate string only
+      var args = [val];
 
       var message = _.isString(validatorOpts) ? validatorOpts : validatorOpts.message;
 
