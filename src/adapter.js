@@ -40,6 +40,7 @@ export default class Adapter extends EventEmitter {
         adapter._routes.push({
           verb: (method.http.verb || 'all').toLowerCase(),
           path: Path.join('/', adapter._application.basePath, method.fullPath()),
+          version: method.version || '*',
           fullName: method.fullName(),
           description: method.description,
           handler: function(req, next) {
@@ -58,23 +59,19 @@ export default class Adapter extends EventEmitter {
     // Register the service
     function applyRoutes() {
       _.each(adapter._routes, function(route) {
-        var [re, service, match] = pathMatch(route.path);
-        debug(`Registering service ${service}`);
-        debug(` => cmd ${route.verb}`);
-        debug(` => path ${re}`);
+        const [re, service, match] = pathMatch(route.path);
         adapter._application.trans.add({
           topic: `poplar.${service}`,
-          cmd: `${route.verb}`,
-          path: re
+          cmd: route.verb,
+          path: re,
+          version: route.version
         }, function (req, cb) {
           req.params = match(req.path);
           debug(`service ${service} called`);
           debug(` => topic \'${req.topic}\'`);
           debug(` => cmd \'${req.cmd}\'`);
-          // debug(` => headers: %j`, req.headers);
-          // debug(` => query: %j`, req.query);
-          // debug(` => params: %j`, req.params);
-          // debug(` => body: %j`, req.body);
+          debug(` => path \'${req.path}\'`);
+          debug(` => version \'${req.version}\'`);
           route.handler(req, cb);
         });
       });
@@ -98,13 +95,15 @@ export default class Adapter extends EventEmitter {
    */
   debugAllRoutes() {
     var infos = [];
-    infos.push('ALL ROUTERS:');
+    infos.push('ALL SERVICES / ROUTERS:');
     _.each(this.allRoutes(), function(route) {
-      var str = route.fullName;
+      var [re, service, match] = pathMatch(route.path);
+      var str = service;
+      str = [_.padEnd(str, 20), route.version].join(' ');
       str = [_.padEnd(str, 25), route.verb.toUpperCase()].join(' ');
-      str = [_.padEnd(str, 36), route.path].join(' ');
-      infos.push(util.format('  %s:', route.description || ''));
-      infos.push(util.format('  ==>  %s', str));
+      str = [_.padEnd(str, 30), route.path].join(' ');
+      infos.push(util.format(' %s:', route.description || ''));
+      infos.push(util.format(' => %s', str));
     });
     var longestSentence = _.max(infos, function(sentence) {
       return (sentence || '').length;

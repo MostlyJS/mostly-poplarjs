@@ -3,6 +3,7 @@ import makeDebug from 'debug';
 import util from 'util';
 import assert from 'assert';
 import _ from 'lodash';
+import path from 'path';
 
 import ApiMethod from './api_method';
 
@@ -30,10 +31,12 @@ export default class ApiBuilder extends EventEmitter {
     this._application = null;
 
     // Options:
+    //   version: '*'
     //   basePath: '/'
     this.options = options || {};
     assert(_.isPlainObject(this.options), util.format('Invalid options for ApiBuilder \'%s\'', this.name));
-
+    this.version = this.options.version || '*';
+    
     this.options.basePath = this.options.basePath || this.name;
   }
 
@@ -57,10 +60,10 @@ export default class ApiBuilder extends EventEmitter {
       // create a new ApiMethod
       var method = new ApiMethod(name, options, fn);
       method.setApiBuilder(this);
-      this._methods[name] = method;
+      this._methods[method.name] = method;
     }
 
-    function checkMethodExistance(methodName) {
+    function checkMethodExistance(methodName, options) {
       if (self._methods[methodName]) {
         debug('Method \'%s\' in ApiBuilder \'%s\' has been overwrited', methodName, self.name);
       }
@@ -132,11 +135,12 @@ export default class ApiBuilder extends EventEmitter {
 
   act(method, options, cb) {
     let prefix = options.prefix || 'poplar';
-    debug('apiBuilder.act', `${prefix}.${this.name}.${method}`);
+    debug('apiBuilder.act', `${prefix}.${method}`);
     this._application.trans.act({
-      topic: `${prefix}.${this.name}.${method}`,
+      topic: `${prefix}.${method}`,
       cmd: options.verb || 'all',
-      path: `/${options.path || ''}`,
+      path: path.join('/', options.path || ''),
+      version: options.version || '*',
       headers: options.headers || {},
       query: options.query || {},
       body: options.body || {}

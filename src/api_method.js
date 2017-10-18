@@ -36,14 +36,14 @@ export default class ApiMethod {
     // if method accept a callback(restrict mode) or not
     this.isRestrictMode = fn.length === 1 ? false : true;
 
+    options = options || {};
+    
     this.name = name;
-
-    this._apiBuilder = null;
 
     assert(_.isString(name) && /^[a-zA-Z0-9_]+$/g.test(name), util.format('\'%s\' is not a valid name, name must be a string, \'a-z\', \'A-Z\' and _ are allowed' , name));
 
-    options = options || {};
-
+    this._apiBuilder = null;
+    
     this.accepts = options.accepts || [];
     this.returns = options.returns;
 
@@ -51,6 +51,7 @@ export default class ApiMethod {
     this.accessType = options.accessType;
     this.notes = options.notes;
     this.documented = options.documented !== false;
+    this.version = null;
     this.http = options.http || {};
 
     assert(_.isPlainObject(this.http), util.format('Invalid http options for method \'%s\'', this.name));
@@ -82,7 +83,7 @@ export default class ApiMethod {
    * Clone a clean method from self
    */
   clone() {
-    return this.create.apply(this.__original);
+    return ApiMethod.create.apply(null, this.__original);
   }
 
   /**
@@ -115,6 +116,7 @@ export default class ApiMethod {
    */
   setApiBuilder(apiBuilder) {
     this._apiBuilder = apiBuilder;
+    this.version = apiBuilder.version || '*';
   }
 
   /**

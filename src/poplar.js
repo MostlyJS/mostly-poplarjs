@@ -69,7 +69,7 @@ export default class Poplar extends EventEmitter {
 
     apiBuilder.setApplication(this);
 
-    name = apiBuilder.name;
+    name = apiBuilder.name + '.' + apiBuilder.version;
     var self = this;
 
     // look up apiBuilder for the collection.
