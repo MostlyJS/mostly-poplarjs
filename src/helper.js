@@ -43,8 +43,15 @@ export function decodeParam(param) {
 export function pathMatch(path, options) {
   var keys = [];
   var re = pathToRegexp(path, keys, options);
+  var service = pathToRegexp.parse(path).reduce((acc, t) => {
+    if (_.isString(t)) {
+      t = t.replace(/^\//, ''); // replace the start /
+      acc.push(t.split('/').join('.'));
+    }
+    return acc;
+  }, []).join('.');
 
-  return [re, function (pathname, params) {
+  return [re, service, function (pathname, params) {
     var m = re.exec(pathname);
     if (!m) return false;
     params = params || {};

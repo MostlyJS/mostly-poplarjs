@@ -58,19 +58,23 @@ export default class Adapter extends EventEmitter {
     // Register the service
     function applyRoutes() {
       _.each(adapter._routes, function(route) {
-        debug('applyRoutes', route);
-        var [re, match] = pathMatch(route.path);
+        var [re, service, match] = pathMatch(route.path);
+        debug(`Registering service ${service}`);
+        debug(` => cmd ${route.verb}`);
+        debug(` => path ${re}`);
         adapter._application.trans.add({
-          topic: `poplar.${route.fullName}`,
+          topic: `poplar.${service}`,
           cmd: `${route.verb}`,
           path: re
         }, function (req, cb) {
           req.params = match(req.path);
-          debug(`service called ${req.topic}->${req.cmd} with ${req.path},
-          => headers: %j
-          => query: %j
-          => params: %j
-          => body: %j`, req.headers, req.query, req.params, req.body);
+          debug(`service ${service} called`);
+          debug(` => topic \'${req.topic}\'`);
+          debug(` => cmd \'${req.cmd}\'`);
+          // debug(` => headers: %j`, req.headers);
+          // debug(` => query: %j`, req.query);
+          // debug(` => params: %j`, req.params);
+          // debug(` => body: %j`, req.body);
           route.handler(req, cb);
         });
       });
