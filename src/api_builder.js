@@ -121,6 +121,7 @@ export default class ApiBuilder extends EventEmitter {
 
     // loop and add all ApiBuilder listeners
     _.each(events, function(fns, type) {
+      type = type.replace(builder.version, self.version);
       if (Array.isArray(fns)) {
         _.each(fns, function(fn) {
           if (_.isFunction(fn)) {
@@ -218,7 +219,7 @@ function addHookFn(proto, name) {
 
     var self = this;
     _.each(args, function(arg) {
-      var event = util.format('%s.%s.%s', name, self.name, arg);
+      var event = util.format('%s.%s.%s.%s', name, self.name, self.version, arg);
       // remove old listeners if redefine is true
       if (options.redefine) {
         debug('Redefine hook', event);

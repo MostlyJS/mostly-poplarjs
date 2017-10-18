@@ -91,7 +91,7 @@ export default class ApiMethod {
    */
   fullName() {
     assert(this._apiBuilder, 'ApiBuilder is not assigned for this method');
-    return util.format('%s.%s', this._apiBuilder.name, this.name);
+    return util.format('%s.%s.%s', this._apiBuilder.name, this.version, this.name);
   }
 
   /**
