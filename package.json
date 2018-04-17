@@ -28,7 +28,6 @@
     "esm": "^3.0.18",
     "lodash": "^4.17.4",
     "micromatch": "^3.1.0",
-    "mostly-entity": "^1.0.11",
     "on-finished": "^2.3.0",
     "path-to-regexp": "^1.7.0",
     "seamless-immutable": "^7.1.2",
