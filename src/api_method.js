@@ -63,7 +63,7 @@ export default class ApiMethod {
 
     this.presenter = options.presenter;
     if (this.presenter) {
-      assert(this.presenter.parse, 'presenter must be a valid Entity');
+      assert(this.presenter.parse, 'Must be a valid Entity: ' + this.presenter);
     }
 
     this.presenterSource = options.presenterSource;
