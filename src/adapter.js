@@ -19,7 +19,7 @@ const debug = makeDebug('mostly:poplarjs:adapter');
  */
 export default class Adapter extends EventEmitter {
 
-  constructor(app, options) {
+  constructor (app, options) {
     super();
 
     this._application = app;
@@ -31,19 +31,19 @@ export default class Adapter extends EventEmitter {
   /**
    * Create a Rest Handler based on Poplar Api instance
    */
-  createHandler() {
+  createHandler () {
     var adapter = this;
     var methods = this._application.allMethods();
 
-    function createRoutes() {
-      _.each(methods, function(method) {
+    function createRoutes () {
+      _.each(methods, function (method) {
         adapter._routes.push({
           verb: (method.http.verb || 'all').toLowerCase(),
           path: Path.join('/', adapter._application.basePath, method.fullPath()),
           version: method.version || '*',
           fullName: method.fullName(),
           description: method.description,
-          handler: function(req, next) {
+          handler: function (req, next) {
             var methodInvocation = method.createMethodInvocation();
             var ctx = new Context(req, methodInvocation, adapter.options);
             adapter._application.invokeMethodInContext(methodInvocation, ctx, function(err) {
@@ -86,17 +86,17 @@ export default class Adapter extends EventEmitter {
   /**
    * return All Routes
    */
-  allRoutes() {
+  allRoutes () {
     return this._routes || [];
   }
 
   /**
    * debug all routes as human readable
    */
-  debugAllRoutes() {
+  debugAllRoutes () {
     var infos = [];
     infos.push('ALL SERVICES / ROUTERS:');
-    _.each(this.allRoutes(), function(route) {
+    _.each(this.allRoutes(), function (route) {
       var [re, service, match] = pathMatch(route.path);
       var str = service;
       str = [_.padEnd(str, 20), route.version].join(' ');
@@ -105,11 +105,11 @@ export default class Adapter extends EventEmitter {
       infos.push(util.format(' %s:', route.description || ''));
       infos.push(util.format(' => %s', str));
     });
-    var longestSentence = _.max(infos, function(sentence) {
+    var longestSentence = _.max(infos, function (sentence) {
       return (sentence || '').length;
     });
     var padEnd = longestSentence.length + 4;
-    _.each(infos, function(sentence) {
+    _.each(infos, function (sentence) {
       debug(_.padEnd(sentence, padEnd));
     });
   }

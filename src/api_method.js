@@ -23,11 +23,11 @@ export default class ApiMethod {
   /*!
    * Simplified APIs
    */
-  static create(name, options, fn) {
+  static create (name, options, fn) {
     return new ApiMethod(name, options, fn);
   }
 
-  constructor(name, options, fn) {
+  constructor (name, options, fn) {
     this.__original = [name, options, fn];
 
     this.fn = fn;
@@ -37,13 +37,13 @@ export default class ApiMethod {
     this.isRestrictMode = fn.length === 1 ? false : true;
 
     options = options || {};
-    
+
     this.name = name;
 
     assert(_.isString(name) && /^[a-zA-Z0-9_]+$/g.test(name), util.format('\'%s\' is not a valid name, name must be a string, \'a-z\', \'A-Z\' and _ are allowed' , name));
 
     this._apiBuilder = null;
-    
+
     this.accepts = options.accepts || [];
     this.returns = options.returns;
 
@@ -89,7 +89,7 @@ export default class ApiMethod {
   /**
    * Return method fullname: bulder name . method name
    */
-  fullName() {
+  fullName () {
     assert(this._apiBuilder, 'ApiBuilder is not assigned for this method');
     return util.format('%s.%s.%s', this._apiBuilder.name, this.version, this.name);
   }
@@ -97,7 +97,7 @@ export default class ApiMethod {
   /**
    * Return method fullPath: bulder basePath + method http path
    */
-  fullPath() {
+  fullPath () {
     assert(this._apiBuilder, 'ApiBuilder is not assigned for this method');
     return Path.join('/', this._apiBuilder.options.basePath, this.http.path || '');
   }
@@ -105,7 +105,7 @@ export default class ApiMethod {
   /**
    * Stringifies the query into the pathname, using the apiMethod's http config
    */
-  makeHref(query) {
+  makeHref (query) {
     query = query || {};
     if (!this._toPath) this._toPath = pathToRegexp.compile(this.fullPath());
     return this._toPath(query);
@@ -114,7 +114,7 @@ export default class ApiMethod {
   /**
    * set ApiBuilder
    */
-  setApiBuilder(apiBuilder) {
+  setApiBuilder (apiBuilder) {
     this._apiBuilder = apiBuilder;
     this.version = apiBuilder.version || '*';
   }
@@ -125,7 +125,7 @@ export default class ApiMethod {
    * @param {Object} args containing named argument data
    * @param {Function} cb callback `fn(err, result)` containing named result data
    */
-  sanitize(args, cb) {
+  sanitize (args, cb) {
     var accepts = this.accepts;
     var sanitizedArgs = invokeSantizers(args, accepts);
     if (cb && typeof cb === 'function') {
@@ -141,7 +141,7 @@ export default class ApiMethod {
    * @param {Object} args containing named argument data
    * @param {Function} cb callback `fn(err, result)` containing named result data
    */
-  validate(args, cb) {
+  validate (args, cb) {
     var accepts = this.accepts;
     var validationErrors = invokeValidations(args, accepts);
     if (cb && typeof cb === 'function') {
@@ -162,7 +162,7 @@ export default class ApiMethod {
    * @param {Object=} options poplar object options
    * @param {Function} cb callback `fn(err, result)` containing named result data
    */
-  invoke(ctx, cb) {
+  invoke (ctx, cb) {
     var args = ctx.args;
     var options = util._extend({}, ctx.options);
 
@@ -215,7 +215,7 @@ export default class ApiMethod {
     options.args = formattedArgs;
 
     // define the callback
-    function callback(err, data) {
+    function callback (err, data) {
       if (err) {
         return cb(err);
       }
@@ -248,7 +248,7 @@ export default class ApiMethod {
         var retval = method.call(self, formattedArgs, callback);
         if (retval && typeof retval.then === 'function') {
           return retval.then(
-            function(args) {
+            function (args) {
               callback(null, args);
             },
             callback // error handler
@@ -263,7 +263,7 @@ export default class ApiMethod {
       self.ctx = ctx;
       self.ctx._done = true;
 
-      onFinished(ctx.res, function(err) {
+      onFinished(ctx.res, function (err) {
         if (err) return cb(err);
         cb();
       });
@@ -287,7 +287,7 @@ export default class ApiMethod {
    * @param  {Object} desc       Argument description.
    * @return {*}                 Coerced argument.
    */
-  static coerceAccepts(uarg, desc) {
+  static coerceAccepts (uarg, desc) {
     var name = desc.name || desc.arg;
     var targetType = ApiMethod.convertToBasicType(desc.type);
     var targetTypeIsArray = _.isArray(targetType) && targetType.length === 1;
@@ -295,7 +295,7 @@ export default class ApiMethod {
     // If coercing an array to an erray,
     // then coerce all members of the array too
     if (targetTypeIsArray && _.isArray(uarg)) {
-      return _.map(uarg, function(arg, ix) {
+      return _.map(uarg, function (arg, ix) {
         // when coercing array items, use only name and type,
         // ignore all other root settings like "required"
         return ApiMethod.coerceAccepts(arg, {
@@ -364,7 +364,7 @@ export default class ApiMethod {
    * @returns {String} A type name compatible with the values returned by
    *   `ApiMethod.getType()`, e.g. "string" or "array".
    */
-  static convertToBasicType(type) {
+  static convertToBasicType (type) {
     if (_.isArray(type)) {
       return _.map(type, ApiMethod.convertToBasicType);
     }
@@ -392,7 +392,7 @@ export default class ApiMethod {
   /*!
    * convert a value to target type
    */
-  static convertValueToTargetType(argName, value, targetType) {
+  static convertValueToTargetType (argName, value, targetType) {
     switch (targetType) {
       case 'string':
         return String(value).valueOf();
@@ -421,7 +421,7 @@ export default class ApiMethod {
    * @param {*} val The value to determine the type for
    * @returns {String} The type name
    */
-  static getType(val) {
+  static getType (val) {
     var type = typeof val;
 
     switch (type) {
@@ -460,7 +460,7 @@ export default class ApiMethod {
   /**
    * Returns a reformatted Object valid for consumption as JSON
    */
-  static toResult(raw, presenter, presenterSource, options) {
+  static toResult (raw, presenter, presenterSource, options) {
     if (Entity.isEntity(presenter)) {
       var result = presenter.parse(_eval(raw, presenterSource), options, _convert);
       return _eval(raw, presenterSource, result);
@@ -468,7 +468,7 @@ export default class ApiMethod {
       return raw;
     }
 
-    function coerceValue(input) {
+    function coerceValue (input) {
       // if input value can be converted to number, then return number
       // if input value is a string, then remove its extra \' or "
       // else return it directly
@@ -483,7 +483,7 @@ export default class ApiMethod {
     }
 
     // extract or insert data in to source
-    function _eval(source, path, value) {
+    function _eval (source, path, value) {
       if (path && _.isString(path)) {
 
         // split path by '[', '.', ']' and then remove empty string
@@ -493,7 +493,7 @@ export default class ApiMethod {
         // if value exists, assign the value to specific path
         // else return the value of specific path
         if (value) {
-          _.each(list, function(el, i) {
+          _.each(list, function (el, i) {
             // if result is not exists, then go next
             if (!result) {
               result = undefined;
@@ -510,7 +510,7 @@ export default class ApiMethod {
           });
           return source;
         } else {
-          _.each(list, function(el) {
+          _.each(list, function (el) {
             if (!result) {
               result = undefined;
               return;
@@ -526,7 +526,7 @@ export default class ApiMethod {
       }
     }
 
-    function _convert(val) {
+    function _convert (val) {
       switch (ApiMethod.getType(val)) {
         case 'date':
           return val.toString();
@@ -543,7 +543,7 @@ export default class ApiMethod {
  * Bad Argument Error
  */
 class BadArgumentError {
-  constructor(msg) {
+  constructor (msg) {
     var err = new Error(msg);
     err.statusCode = 400;
     return err;
@@ -558,7 +558,7 @@ class BadArgumentError {
  */
 class MethodInvocation extends ApiMethod {
 
-  constructor(name, options, fn) {
+  constructor (name, options, fn) {
     super(name, options, fn);
 
     // locals used by `set` and `get` during method invocation
@@ -568,7 +568,7 @@ class MethodInvocation extends ApiMethod {
   /**
    * method invocation statuses
    */
-  init(apiBuilder) {
+  init (apiBuilder) {
     this.setApiBuilder(apiBuilder);
 
     this.isSanitized = false;
@@ -582,7 +582,7 @@ class MethodInvocation extends ApiMethod {
    * @param {String} name local variable name
    * @param {*} obj local variable value
    */
-  set(name, obj) {
+  set (name, obj) {
     this.locals[name] = obj;
   }
 
@@ -590,7 +590,7 @@ class MethodInvocation extends ApiMethod {
    * Get a local variable from MethodInvocation instance
    * @param {String} name local variable name
    */
-  get(name) {
+  get (name) {
     return this.locals[name];
   }
 }

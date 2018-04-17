@@ -24,11 +24,11 @@ export default class Poplar extends EventEmitter {
    * @param {Object} options Poplar options
    * @return {Poplar} Poplar instance
    */
-  static create(trans, options) {
+  static create (trans, options) {
     return new Poplar(trans, options);
   }
 
-  constructor(trans, options) {
+  constructor (trans, options) {
     super();
 
     // Avoid warning: possible EventEmitter memory leak detected
@@ -45,7 +45,7 @@ export default class Poplar extends EventEmitter {
   /**
    * Set bathPath for All Apis
    */
-  setBasePath(basePath) {
+  setBasePath (basePath) {
     assert(_.isString(basePath) && /^[a-zA-Z0-9_\/\.\-]+$/g.test(basePath), util.format('\'%s\' is not a valid basePath, basePath must be a string, \'a-z\', \'A-Z\', _, - and . are allowed' , basePath));
     this.basePath = basePath;
   }
@@ -53,14 +53,14 @@ export default class Poplar extends EventEmitter {
   /**
    * Get all methods
    */
-  allMethods() {
+  allMethods () {
     return _.values(this._methods) || [];
   }
 
   /**
    * Use a ApiBuilder
    */
-  use(name, options) {
+  use (name, options) {
     var apiBuilder = name;
 
     if (!(apiBuilder instanceof ApiBuilder)) {
@@ -87,9 +87,9 @@ export default class Poplar extends EventEmitter {
     // look up all ApiBuilder listeners then add it to api
     function mergeListeners(emitter) {
       var events = emitter._events;
-      _.each(events, function(fns, type) {
+      _.each(events, function (fns, type) {
         if (Array.isArray(fns)) {
-          _.each(fns, function(fn) {
+          _.each(fns, function (fn) {
             if (_.isFunction(fn)) {
               self.on(type, fn);
             }
@@ -103,7 +103,7 @@ export default class Poplar extends EventEmitter {
     // look up all ApiBuilder methods then add it to api
     function mergeMethods(builder) {
       var methods = builder.methods();
-      _.each(methods, function(fn, methodName) {
+      _.each(methods, function (fn, methodName) {
         // e.g.: users.getUserInfo
         self._methods[util.format('%s.%s', name, methodName)] = fn;
       });
@@ -122,7 +122,7 @@ export default class Poplar extends EventEmitter {
    * @param {Object} options Adapter options
    * @return {Function}
    */
-  handler(name, options) {
+  handler (name, options) {
     var adapter = new Adapter(this, options);
 
     // create a handler from Adapter
@@ -141,7 +141,7 @@ export default class Poplar extends EventEmitter {
    * `ApiMethod` argument defines a type with the given `name`.
    *
    * ```js
-   * Poplar.defineType('MyType', function(val, ctx) {
+   * Poplar.defineType('MyType', function (val, ctx) {
    *   // use the val and ctx objects to return the concrete value
    *   return new MyType(val);
    * });
@@ -157,7 +157,7 @@ export default class Poplar extends EventEmitter {
   /*!
    * Execute Hooks by type and method.
    */
-  execHooks(when, method, ctx, next) {
+  execHooks (when, method, ctx, next) {
     var methodName = method.fullName();
 
     var stack = [];
@@ -166,15 +166,15 @@ export default class Poplar extends EventEmitter {
 
     var self = this;
 
-    _.each(listenerNames, function(listenerName) {
+    _.each(listenerNames, function (listenerName) {
       addToStack(self.listeners(listenerName));
     });
 
-    function addToStack(fn) {
+    function addToStack (fn) {
       stack = stack.concat(fn);
     }
 
-    function execStack(err) {
+    function execStack (err) {
       if (err) return next(err);
 
       var cur = stack.shift();
@@ -183,7 +183,7 @@ export default class Poplar extends EventEmitter {
         try {
           var result = cur.call(method, ctx, execStack, method);
           if (result && typeof result.then === 'function') {
-            result.then(function() { next(); }, next);
+            result.then(function () { next(); }, next);
           }
         } catch (e) {
           next(e);
@@ -201,20 +201,20 @@ export default class Poplar extends EventEmitter {
    * Execute registered before/after hooks.
    * @param {Object} ctx Context object
    * @param {Object} method MethodInvocation instance that will be called
-   * @param {function(Error=)} cb callback function
+   * @param {function (Error=)} cb callback function
    */
-  invokeMethodInContext(method, ctx, cb) {
+  invokeMethodInContext (method, ctx, cb) {
     var self = this;
 
-    self.execHooks('before', method, ctx, function(err) {
+    self.execHooks('before', method, ctx, function (err) {
       if (err) return triggerErrorAndCallBack(err);
 
-      method.invoke(ctx, function(err, result) {
+      method.invoke(ctx, function (err, result) {
         debug('poplar.invokeMethodInContext', result);
         ctx.result = result;
         if (err) return triggerErrorAndCallBack(err);
 
-        self.execHooks('after', method, ctx, function(err) {
+        self.execHooks('after', method, ctx, function (err) {
           if (err) return triggerErrorAndCallBack(err);
           cb();
         });
@@ -222,9 +222,9 @@ export default class Poplar extends EventEmitter {
 
     });
 
-    function triggerErrorAndCallBack(err) {
+    function triggerErrorAndCallBack (err) {
       ctx.error = err;
-      self.execHooks('afterError', method, ctx, function(hookErr) {
+      self.execHooks('afterError', method, ctx, function (hookErr) {
         cb(hookErr || err);
       });
     }
@@ -235,11 +235,11 @@ export default class Poplar extends EventEmitter {
    * @param {String} methodName name for method
    * @param {String} type: `before`, `after`, `afterError`
    */
-  searchListeners(methodName, type) {
+  searchListeners (methodName, type) {
     var allListenerNames = Object.keys(this._events);
     var listenerNames = [];
     var fullType = util.format('%s.%s', type, methodName);
-    _.each(allListenerNames, function(name) {
+    _.each(allListenerNames, function (name) {
       if (micromatch.isMatch(fullType, name)) {
         listenerNames.push(name);
       }
@@ -252,7 +252,7 @@ export default class Poplar extends EventEmitter {
    * @param {String} methodName name for method
    * @param {String} type Available types: `before`, `after`, `afterError`
    */
-  searchListenerTree(methodName, type) {
+  searchListenerTree (methodName, type) {
     var listeners = this._listenerTree[methodName];
     if (listeners) {
       return listeners[type];
@@ -274,14 +274,14 @@ export default class Poplar extends EventEmitter {
    * }
    * ```
    */
-  analyzeListenerTree() {
+  analyzeListenerTree () {
     var methods = this._methods;
     var listenerTree = {};
     var self = this;
 
-    _.each(methods, function(fn, name) {
+    _.each(methods, function (fn, name) {
       listenerTree[name] = listenerTree[name] || {};
-      _.each(['before', 'after', 'afterError'], function(type) {
+      _.each(['before', 'after', 'afterError'], function (type) {
         listenerTree[name][type] = self.searchListeners(name, type) || [];
       });
     });
@@ -292,7 +292,7 @@ export default class Poplar extends EventEmitter {
   /**
    * Stringifies the query into the pathname, using the apiMethod's http config
    */
-  makeHref(methodName, query, defaultHref) {
+  makeHref (methodName, query, defaultHref) {
     assert(methodName, 'no such apiMethod found');
     var apiMethod = this._methods[methodName];
     if (!apiMethod) return defaultHref || methodName;
@@ -309,7 +309,7 @@ Poplar.locals = {};
  * Assigns configuration name to value
  * Retrieve the value of a configuration with Poplar.get().
  */
-Poplar.set = Poplar.prototype.set = function(name, obj, mode) {
+Poplar.set = Poplar.prototype.set = function (name, obj, mode) {
   mode = mode || 'overwrite';
   switch(mode){
     case 'overwrite':
@@ -335,7 +335,7 @@ Poplar.set = Poplar.prototype.set = function(name, obj, mode) {
  * // => undefined
  * ```
  */
-Poplar.unset = Poplar.prototype.unset = function(name) {
+Poplar.unset = Poplar.prototype.unset = function (name) {
   delete Poplar.locals[name];
 };
 
@@ -352,7 +352,7 @@ Poplar.unset = Poplar.prototype.unset = function(name) {
  * // => "My Site"
  * ```
  */
-Poplar.get = Poplar.prototype.get = function(name) {
+Poplar.get = Poplar.prototype.get = function (name) {
   return Poplar.locals[name];
 };
 
@@ -360,13 +360,13 @@ Poplar.get = Poplar.prototype.get = function(name) {
 /*!
  * Build hook fn
  */
-function addHookFn(proto, name) {
-  proto[name] = function() {
+function addHookFn (proto, name) {
+  proto[name] = function () {
     var args = [].splice.call(arguments, 0);
     var fn = args.splice(args.length - 1)[0];
     fn = _.isFunction(fn) ? fn : undefined;
     var self = this;
-    _.each(args, function(arg) {
+    _.each(args, function (arg) {
       self.on(util.format('%s.%s', name, arg), fn);
     });
     this.analyzeListenerTree();
@@ -380,7 +380,7 @@ function addHookFn(proto, name) {
  *
  * ```js
  * // Do something before our `user.greet` example, earlier.
- * api.before('user.greet', function(ctx, next) {
+ * api.before('user.greet', function (ctx, next) {
  *   if ((ctx.req.param('password') || '').toString() !== '1234') {
  *     next(new Error('Bad password!'));
  *   } else {
@@ -389,13 +389,13 @@ function addHookFn(proto, name) {
  * });
  *
  * // Do something before any `user` method.
- * api.before('user.*', function(ctx, next) {
+ * api.before('user.*', function (ctx, next) {
  *   console.log('Calling a user method.');
  *   next();
  * });
  *
  * // Do something before a `dog` instance method.
- * api.before('dog.*', function(ctx, next) {
+ * api.before('dog.*', function (ctx, next) {
  *   var dog = this;
  *   console.log('Calling a method on "%s".', dog.name);
  *   next();
@@ -418,19 +418,19 @@ addHookFn(Poplar.prototype, 'before');
  * ```js
  * // Do something after the `speak` instance method.
  * // NOTE: you cannot cancel a method after it has been called.
- * api.after('dog.speak', function(ctx, next) {
+ * api.after('dog.speak', function (ctx, next) {
  *   console.log('After speak!');
  *   next();
  * });
  *
  * // Do something before all methods.
- * api.before('**', function(ctx, next, method) {
+ * api.before('**', function (ctx, next, method) {
  *   console.log('Calling:', method.name);
  *   next();
  * });
  *
  * // Modify all returned values named `result`.
- * api.after('**', function(ctx, next) {
+ * api.after('**', function (ctx, next) {
  *   ctx.result += '!!!';
  *   next();
  * });
@@ -452,26 +452,26 @@ addHookFn(Poplar.prototype, 'after');
  *
  * ```js
  * // Do something after the `speak` instance method failed.
- * api.afterError('dog.speak', function(ctx, next) {
+ * api.afterError('dog.speak', function (ctx, next) {
  *   console.log('Cannot speak!', ctx.error);
  *   next();
  * });
  *
  * // Do something before all methods.
- * api.afterError('**', function(ctx, next, method) {
+ * api.afterError('**', function (ctx, next, method) {
  *   console.log('Failed', method.name, ctx.error);
  *   next();
  * });
  *
  * // Modify all returned errors
- * api.after('**', function(ctx, next) {
+ * api.after('**', function (ctx, next) {
  *   if (!ctx.error.details) ctx.result.details = {};
  *   ctx.error.details.info = 'intercepted by a hook';
  *   next();
  * });
  *
  * // Report a different error
- * api.after('dog.speak', function(ctx, next) {
+ * api.after('dog.speak', function (ctx, next) {
  *   console.error(ctx.error);
  *   next(new Error('See server console log for details.'));
  * });

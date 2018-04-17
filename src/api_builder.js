@@ -14,7 +14,7 @@ const debug = makeDebug('mostly:poplarjs:api-builder');
  */
 export default class ApiBuilder extends EventEmitter {
 
-  constructor(name, options) {
+  constructor (name, options) {
     // call super
     super();
 
@@ -36,7 +36,7 @@ export default class ApiBuilder extends EventEmitter {
     this.options = options || {};
     assert(_.isPlainObject(this.options), util.format('Invalid options for ApiBuilder \'%s\'', this.name));
     this.version = this.options.version || '*';
-    
+ 
     this.options.basePath = this.options.basePath || this.name;
   }
 
@@ -47,7 +47,7 @@ export default class ApiBuilder extends EventEmitter {
    * @param {Object} options: method options
    * @param {Function} fn: method function
    */
-  define(name, options, fn) {
+  define (name, options, fn) {
     var self = this;
 
     if (name instanceof ApiMethod) {
@@ -76,7 +76,7 @@ export default class ApiBuilder extends EventEmitter {
    * @param {String} prependingName: method name about to be prepending
    * @param {String} prependedName: method name about to be prepended
    **/
-  prepend(prependingName, prependedName) {
+  prepend (prependingName, prependedName) {
     assert(this.exists(prependingName), 'Method is about to be prepending is not exists');
     assert(this.exists(prependedName), 'Method is about to be prepended is not exists');
 
@@ -84,7 +84,7 @@ export default class ApiBuilder extends EventEmitter {
     this.undefine(prependingMethod);
 
     var methods = {};
-    _.each(this._methods, function(method, name) {
+    _.each(this._methods, function (method, name) {
       if (prependedName === name) {
         methods[prependingName] = prependingMethod;
       }
@@ -102,7 +102,7 @@ export default class ApiBuilder extends EventEmitter {
    * @param {Object} options: method options
    * @param {Function} fn: method function
    */
-  extend(builder) {
+  extend (builder) {
     assert(builder instanceof ApiBuilder, util.format('%s is not a valid ApiBuilder', builder));
 
     this.name = builder.name;
@@ -114,7 +114,7 @@ export default class ApiBuilder extends EventEmitter {
     var self = this;
 
     // loop and define all apiBuilder's methods
-    _.each(methods, function(method) {
+    _.each(methods, function (method) {
       var newMethod = method.clone();
       self.define(newMethod);
     });
@@ -123,7 +123,7 @@ export default class ApiBuilder extends EventEmitter {
     _.each(events, function(fns, type) {
       type = type.replace(builder.version, self.version);
       if (Array.isArray(fns)) {
-        _.each(fns, function(fn) {
+        _.each(fns, function (fn) {
           if (_.isFunction(fn)) {
             self.on(type, fn);
           }
@@ -134,7 +134,7 @@ export default class ApiBuilder extends EventEmitter {
     });
   }
 
-  act(method, options, cb) {
+  act (method, options, cb) {
     let prefix = options.prefix || 'poplar';
     debug('apiBuilder.act', `${prefix}.${method}`);
     this._application.trans.act({
@@ -151,7 +151,7 @@ export default class ApiBuilder extends EventEmitter {
   /**
    * set Application
    */
-  setApplication(app) {
+  setApplication (app) {
     this._application = app;
   }
 
@@ -160,7 +160,7 @@ export default class ApiBuilder extends EventEmitter {
    *
    * @param {String} name: method name
    */
-  method(name) {
+  method (name) {
     return this._methods[name];
   }
 
@@ -169,7 +169,7 @@ export default class ApiBuilder extends EventEmitter {
    *
    * @param {String} name: method name
    */
-  exists(name) {
+  exists (name) {
     return !!this.method(name);
   }
 
@@ -178,21 +178,21 @@ export default class ApiBuilder extends EventEmitter {
    *
    * @param {String} name: method name
    */
-  undefine(name) {
+  undefine (name) {
     delete this._methods[name];
   }
 
   /**
    * Get all methods
    */
-  methods() {
+  methods () {
     return this._methods || {};
   }
 
   /**
    * Remove existing hooks
    */
-  removeHooks(hook, ...events) {
+  removeHooks (hook, ...events) {
     events.forEach(event => {
       var eventName = util.format('%s.%s.%s', hook, this.name, event);
       debug('Remove hook', eventName);
@@ -205,8 +205,8 @@ export default class ApiBuilder extends EventEmitter {
 /*!
  * Build hook fn
  */
-function addHookFn(proto, name) {
-  proto[name] = function() {
+function addHookFn (proto, name) {
+  proto[name] = function () {
     var args = [].splice.call(arguments, 0);
 
     var fn = args.splice(args.length - 1)[0];
@@ -237,7 +237,7 @@ function addHookFn(proto, name) {
  *
  * ```js
  * // Do something before our `user.greet` example, earlier.
- * api.before('user.greet', function(ctx, next) {
+ * api.before('user.greet', function (ctx, next) {
  *   if ((ctx.req.param('password') || '').toString() !== '1234') {
  *     next(new Error('Bad password!'));
  *   } else {
@@ -246,13 +246,13 @@ function addHookFn(proto, name) {
  * });
  *
  * // Do something before any `user` method.
- * api.before('user.*', function(ctx, next) {
+ * api.before('user.*', function (ctx, next) {
  *   console.log('Calling a user method.');
  *   next();
  * });
  *
  * // Do something before a `dog` instance method.
- * api.before('dog.*', function(ctx, next) {
+ * api.before('dog.*', function (ctx, next) {
  *   var dog = this;
  *   console.log('Calling a method on "%s".', dog.name);
  *   next();
@@ -276,19 +276,19 @@ addHookFn(ApiBuilder.prototype, 'before');
  * ```js
  * // Do something after the `speak` instance method.
  * // NOTE: you cannot cancel a method after it has been called.
- * api.after('dog.speak', function(ctx, next) {
+ * api.after('dog.speak', function (ctx, next) {
  *   console.log('After speak!');
  *   next();
  * });
  *
  * // Do something before all methods.
- * api.before('**', function(ctx, next, method) {
+ * api.before('**', function (ctx, next, method) {
  *   console.log('Calling:', method.name);
  *   next();
  * });
  *
  * // Modify all returned values named `result`.
- * api.after('**', function(ctx, next) {
+ * api.after('**', function (ctx, next) {
  *   ctx.result += '!!!';
  *   next();
  * });
@@ -311,26 +311,26 @@ addHookFn(ApiBuilder.prototype, 'after');
  *
  * ```js
  * // Do something after the `speak` instance method failed.
- * api.afterError('dog.speak', function(ctx, next) {
+ * api.afterError('dog.speak', function (ctx, next) {
  *   console.log('Cannot speak!', ctx.error);
  *   next();
  * });
  *
  * // Do something before all methods.
- * api.afterError('**', function(ctx, next, method) {
+ * api.afterError('**', function (ctx, next, method) {
  *   console.log('Failed', method.name, ctx.error);
  *   next();
  * });
  *
  * // Modify all returned errors
- * api.after('**', function(ctx, next) {
+ * api.after('**', function (ctx, next) {
  *   if (!ctx.error.details) ctx.result.details = {};
  *   ctx.error.details.info = 'intercepted by a hook';
  *   next();
  * });
  *
  * // Report a different error
- * api.after('dog.speak', function(ctx, next) {
+ * api.after('dog.speak', function (ctx, next) {
  *   console.error(ctx.error);
  *   next(new Error('See server console log for details.'));
  * });

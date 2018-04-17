@@ -18,7 +18,7 @@ var debug = makeDebug('mostly:poplarjs:context');
  */
 export default class Context extends EventEmitter {
 
-  constructor(req, method, options) {
+  constructor (req, method, options) {
     super();
 
     this.req = req;
@@ -33,7 +33,7 @@ export default class Context extends EventEmitter {
   /**
    * Build args object from the context.
    */
-  buildArgs(method) {
+  buildArgs (method) {
     var args = {};
     var ctx = this;
     var accepts = method.accepts;
@@ -149,7 +149,7 @@ export default class Context extends EventEmitter {
    * @param {String} name
    * @param {Object} options **optional**
    */
-  getArgByName(name, options) {
+  getArgByName (name, options) {
     var req = this.req;
     var args = req.params && req.params.args !== undefined ? req.params.args :
                req.body && req.body.args !== undefined ? req.body.args :
@@ -191,16 +191,16 @@ var isint = /^[0-9]+$/;
 var isfloat = /^([0-9]+)?\.[0-9]+$/;
 
 // Use dynamic to coerce a value or array of values.
-function dynamic(val, toType, ctx) {
+function dynamic (val, toType, ctx) {
   if (Array.isArray(val)) {
-    return _.map(val, function(v) {
+    return _.map(val, function (v) {
       return dynamic(v, toType, ctx);
     });
   }
   return (new Dynamic(val, ctx)).to(toType);
 }
 
-function coerce(str) {
+function coerce (str) {
   if (typeof str !== 'string') return str;
   if ('null' === str) return null;
   if ('true' === str) return true;
@@ -211,7 +211,7 @@ function coerce(str) {
 }
 
 // coerce every string in the given object / array
-function coerceAll(obj) {
+function coerceAll (obj) {
   var type = Array.isArray(obj) ? 'array' : typeof obj;
   var i;
   var n;
