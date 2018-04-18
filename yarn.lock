@@ -1020,8 +1020,8 @@ eslint@^3.0.0:
     user-home "^2.0.0"
 
 esm@^3.0.14:
-  version "3.0.18"
-  resolved "https://registry.npmjs.org/esm/-/esm-3.0.18.tgz#afdde98572af447637dc1a2841606945aa02dad0"
+  version "3.0.14"
+  resolved "https://registry.npmjs.org/esm/-/esm-3.0.14.tgz#a9a79b7348c8708050ff42499b5ecbec019d08dc"
 
 espree@^3.4.0:
   version "3.4.2"
