@@ -1,9 +1,9 @@
-var _ = require('lodash');
-var __validator__ = require('validator');
-var xss = require('xss');
-var debug = require('debug')('mostly:poplarjs:sanitizer');
+const _ = require('lodash');
+const __validator__ = require('validator');
+const xss = require('xss');
+const debug = require('debug')('mostly:poplarjs:sanitizer');
 
-import { isEmpty }  from './helper';
+const { isEmpty }  = require('./helper');
 
 /*!
  * @class A collection of sanitizers
@@ -85,7 +85,7 @@ Sanitizer.xss = xss;
  * ]
  * ```
  */
-export default function Sanitize(params, accepts) {
+module.exports = function Sanitize(params, accepts) {
   params = params || {};
   accepts = accepts || [];
 
@@ -162,3 +162,5 @@ Sanitize.extend = function (name, fn) {
 Sanitize.method = function(name) {
   return Sanitizer[name];
 };
+
+module.exports = Sanitizer;

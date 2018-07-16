@@ -1,7 +1,7 @@
-var _ = require('lodash');
-var __validator__ = require('validator');
-var util = require('util');
-import { isEmpty } from './helper';
+const _ = require('lodash');
+const __validator__ = require('validator');
+const util = require('util');
+const { isEmpty } = require('./helper');
 
 var debug = require('debug')('mostly:poplarjs:validation');
 
@@ -205,7 +205,7 @@ ValidationError.prototype.any = function() {
  * ]
  * ```
  */
-export default function Validate(params, accepts) {
+module.exports = function Validate(params, accepts) {
 
   var validationError = new ValidationError();
   params = params || {};
@@ -327,3 +327,5 @@ Validate.method = function(name) {
 Validate.extend('required', function(val) {
   return !isEmpty(val);
 });
+
+module.exports = Validator;

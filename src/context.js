@@ -1,11 +1,11 @@
-import { EventEmitter } from 'events';
-import _ from 'lodash';
-import util from 'util';
-import assert from 'assert';
-import makeDebug from 'debug';
-import { Dynamic } from 'mostly-entity';
+const { EventEmitter } = require('events');
+const _ = require('lodash');
+const util = require('util');
+const assert = require('assert');
+const makeDebug = require('debug');
+const { Dynamic } = require('mostly-entity');
 
-import { escapeRegex } from './helper';
+const { escapeRegex } = require('./helper');
 
 var debug = makeDebug('mostly:poplarjs:context');
 
@@ -16,7 +16,7 @@ var debug = makeDebug('mostly:poplarjs:context');
  * @return {Context}
  * @class
  */
-export default class Context extends EventEmitter {
+class Context extends EventEmitter {
 
   constructor (req, method, options) {
     super();
@@ -238,6 +238,4 @@ function coerceAll (obj) {
   return obj;
 }
 
-
-
-
+module.exports = Context;

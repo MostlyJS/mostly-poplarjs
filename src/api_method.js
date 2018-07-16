@@ -1,15 +1,15 @@
-import makeDebug from 'debug';
-import util from 'util';
-import assert from 'assert';
-import _ from 'lodash';
-import Path from 'path';
-import onFinished from 'on-finished';
-import pathToRegexp from 'path-to-regexp';
-import Entity from 'mostly-entity';
-import SuperError from 'super-error';
+const makeDebug = require('debug');
+const util = require('util');
+const assert = require('assert');
+const _ = require('lodash');
+const Path = require('path');
+const onFinished = require('on-finished');
+const pathToRegexp = require('path-to-regexp');
+const Entity = require('mostly-entity');
+const SuperError = require('super-error');
 
-import invokeValidations from './validation';
-import invokeSantizers from './sanitizer';
+const invokeValidations = require('./validation');
+const invokeSantizers = require('./sanitizer');
 
 const debug = makeDebug('mostly:poplarjs:api-method');
 
@@ -18,7 +18,7 @@ const ValidationError = SuperError.subclass('ValidationError');
 /**
  * @class A wrapper to build api methods.
  */
-export default class ApiMethod {
+class ApiMethod {
 
   /*!
    * Simplified APIs
@@ -538,6 +538,8 @@ export default class ApiMethod {
     }
   }
 }
+
+module.exports = ApiMethod;
 
 /*!
  * Bad Argument Error

@@ -1,13 +1,13 @@
-import makeDebug from 'debug';
-import { EventEmitter } from 'events';
-import util from 'util';
-import assert from 'assert';
-import _ from 'lodash';
-import Path from 'path';
+const makeDebug = require('debug');
+const { EventEmitter } = require('events');
+const util = require('util');
+const assert = require('assert');
+const _ = require('lodash');
+const Path = require('path');
 
-import Poplar from './poplar';
-import Context from './context';
-import { pathMatch } from './helper';
+const Poplar = require('./poplar');
+const Context = require('./context');
+const { pathMatch } = require('./helper');
 
 const debug = makeDebug('mostly:poplarjs:adapter');
 
@@ -17,7 +17,7 @@ const debug = makeDebug('mostly:poplarjs:adapter');
  * @param {*} val The value object
  * @param {Context} ctx The Context
  */
-export default class Adapter extends EventEmitter {
+module.exports = class Adapter extends EventEmitter {
 
   constructor (app, options) {
     super();
@@ -114,4 +114,4 @@ export default class Adapter extends EventEmitter {
     });
   }
 
-}
+};

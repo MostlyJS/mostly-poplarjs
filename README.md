@@ -29,10 +29,10 @@ module.exports = DummyApi;
 
 Wrapping it as standalone server
 ```javascript
-import nats from 'nats';
-import mostly from 'mostly-node';
-import poplar from 'mostly-poplarjs';
-import dummyApi from './dummy_api';
+const nats = require('nats');
+const mostly = require('mostly-node');
+const poplar = require('mostly-poplarjs');
+const dummyApi = require('./dummy_api');
 
 const trans = new mostly(nats.connect());
 trans.ready(() => {

@@ -1,17 +1,17 @@
-import _ from 'lodash';
-import pathToRegexp from 'path-to-regexp';
+const _ = require('lodash');
+const pathToRegexp = require('path-to-regexp');
 
 /*!
  * convert obj to string
  */
-export function obj2str (val) {
+function obj2str (val) {
   return Object.prototype.toString.call(val);
 }
 
 /*!
  * check if a value is empty
  */
-export function isEmpty (val) {
+function isEmpty (val) {
   if (val === 0) return true;
   if (Number.isNaN(val)) return true;
   return !_.isNumber(val) && _.isEmpty(val);
@@ -20,19 +20,19 @@ export function isEmpty (val) {
 /*!
  * check if a value is present
  */
-export function isPresent (val) {
+function isPresent (val) {
   return !isEmpty(val);
 }
 
 /*!
  * excape RegExp string
  */
-export function escapeRegex (d) {
+function escapeRegex (d) {
   // see http://stackoverflow.com/a/6969486/69868
   return d.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 }
 
-export function decodeParam (param) {
+function decodeParam (param) {
   try {
     return decodeURIComponent(param);
   } catch (_) {
@@ -40,7 +40,7 @@ export function decodeParam (param) {
   }
 }
 
-export function pathMatch (path, options) {
+function pathMatch (path, options) {
   var keys = [];
   var re = pathToRegexp(path, keys, options);
   var service = pathToRegexp.parse(path).reduce((acc, t) => {
@@ -70,3 +70,12 @@ export function pathMatch (path, options) {
     return params;
   }];
 }
+
+module.exports = {
+  decodeParam,
+  escapeRegex,
+  isEmpty,
+  isPresent,
+  obj2str,
+  pathMatch
+};

@@ -1,14 +1,14 @@
-import { EventEmitter } from 'events';
-import util from 'util';
-import assert from 'assert';
-import path from 'path';
-import _ from 'lodash';
-import micromatch from 'micromatch';
-import makeDebug from 'debug';
-import { Dynamic } from 'mostly-entity';
+const { EventEmitter } = require('events');
+const util = require('util');
+const assert = require('assert');
+const path = require('path');
+const _ = require('lodash');
+const micromatch = require('micromatch');
+const makeDebug = require('debug');
+const { Dynamic } = require('mostly-entity');
 
-import Adapter from './adapter';
-import ApiBuilder from './api_builder';
+const Adapter = require('./adapter');
+const ApiBuilder = require('./api_builder');
 
 const debug = makeDebug('mostly:poplarjs:poplar');
 
@@ -17,7 +17,7 @@ const debug = makeDebug('mostly:poplarjs:poplar');
  * @class
  * @param {Object} options Poplar options object
  */
-export default class Poplar extends EventEmitter {
+class Poplar extends EventEmitter {
   /**
    * Simplified API for creating Poplar instance, equals to `new Poplar(options)`
    * @param {Object} trans Nats transport
@@ -356,6 +356,7 @@ Poplar.get = Poplar.prototype.get = function (name) {
   return Poplar.locals[name];
 };
 
+module.exports = Poplar;
 
 /*!
  * Build hook fn

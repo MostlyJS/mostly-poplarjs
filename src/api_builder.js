@@ -1,18 +1,18 @@
-import { EventEmitter } from 'events';
-import makeDebug from 'debug';
-import util from 'util';
-import assert from 'assert';
-import _ from 'lodash';
-import path from 'path';
+const { EventEmitter } = require('events');
+const makeDebug = require('debug');
+const util = require('util');
+const assert = require('assert');
+const _ = require('lodash');
+const path = require('path');
 
-import ApiMethod from './api_method';
+const ApiMethod = require('./api_method');
 
 const debug = makeDebug('mostly:poplarjs:api-builder');
 
 /**
  * @class A wrapper to build apis.
  */
-export default class ApiBuilder extends EventEmitter {
+class ApiBuilder extends EventEmitter {
 
   constructor (name, options) {
     // call super
@@ -229,6 +229,8 @@ function addHookFn (proto, name) {
     });
   };
 }
+
+module.exports = ApiBuilder;
 
 /**
  * Execute the given function before the matched method string.
