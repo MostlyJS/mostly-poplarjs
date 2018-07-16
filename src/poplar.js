@@ -1,7 +1,6 @@
 const { EventEmitter } = require('events');
 const util = require('util');
 const assert = require('assert');
-const path = require('path');
 const _ = require('lodash');
 const micromatch = require('micromatch');
 const makeDebug = require('debug');

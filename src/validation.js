@@ -205,7 +205,7 @@ ValidationError.prototype.any = function() {
  * ]
  * ```
  */
-module.exports = function Validate(params, accepts) {
+function Validate(params, accepts) {
 
   var validationError = new ValidationError();
   params = params || {};
@@ -328,4 +328,4 @@ Validate.extend('required', function(val) {
   return !isEmpty(val);
 });
 
-module.exports = Validator;
+module.exports = Validate;

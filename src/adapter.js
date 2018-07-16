@@ -17,13 +17,13 @@ const debug = makeDebug('mostly:poplarjs:adapter');
  * @param {*} val The value object
  * @param {Context} ctx The Context
  */
-module.exports = class Adapter extends EventEmitter {
+class Adapter extends EventEmitter {
 
   constructor (app, options) {
     super();
 
     this._application = app;
-    assert(app instanceof Poplar, util.format('%s must be a Poplar instance', app));
+    //assert(app instanceof Poplar, util.format('%s must be a Poplar instance', app));
     this.options = _.extend({}, (app.options || {}).rest, options);
     this._routes = [];
   }
@@ -115,3 +115,5 @@ module.exports = class Adapter extends EventEmitter {
   }
 
 };
+
+module.exports = Adapter;

@@ -85,7 +85,7 @@ Sanitizer.xss = xss;
  * ]
  * ```
  */
-module.exports = function Sanitize(params, accepts) {
+function Sanitize(params, accepts) {
   params = params || {};
   accepts = accepts || [];
 
@@ -163,4 +163,4 @@ Sanitize.method = function(name) {
   return Sanitizer[name];
 };
 
-module.exports = Sanitizer;
+module.exports = Sanitize;
